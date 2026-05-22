@@ -15,10 +15,10 @@ public class EmployeeProject
     public int ProjectId { get; set; }
 
     [Required]
-    public DateTime AssignedOn { get; set; }
+    public DateOnly AssignedOn { get; set; }
 
     [Required]
-    public DateTime CreateDate { get; set; } = DateTime.UtcNow;
+    public DateOnly CreateDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
 
     [Required, MaxLength(50)]
     public string CreatedBy { get; set; } = string.Empty;
@@ -28,7 +28,7 @@ public class EmployeeProject
     [MaxLength(50)]
     public string? UpdatedBy { get; set; }
 
-    public DateTime? UpdatedDate { get; set; }
+    public DateOnly? UpdatedDate { get; set; }
 
     public Employee? Employee { get; set; }
 

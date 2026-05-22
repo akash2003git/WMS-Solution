@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WMS.Application.DTOs.Auth;
 using WMS.Application.Interfaces;
+using WMS.Application.Common.Responses;
 
 namespace WMS.API.Controllers;
 
@@ -20,14 +21,7 @@ public class AuthController : ControllerBase
     {
         var response = await _authService.LoginAsync(request);
 
-        if (response == null)
-        {
-            return Unauthorized(new
-            {
-                message = "Invalid username or password"
-            });
-        }
-
-        return Ok(response);
+        return Ok(ApiResponse<LoginResponseDto>
+            .SuccessResponse(response, "Login successful"));
     }
 }

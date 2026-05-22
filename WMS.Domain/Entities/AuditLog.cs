@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using WMS.Domain.Enums;
 
 namespace WMS.Domain.Entities;
 
@@ -12,9 +13,8 @@ public class AuditLog
     public int RecordId { get; set; }
 
     [MaxLength(20)]
-    public string? Action { get; set; }   // Insert / Update / Delete
+    public AuditAction Action { get; set; }
 
     public int CreatedBy { get; set; }
-
     public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 }

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WMS.Domain.Enums;
 
 namespace WMS.Domain.Entities;
 
@@ -16,14 +17,13 @@ public class Attendance
 
     public DateTime? CheckOut { get; set; }
 
-    // [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public double? TotalHours { get; set; }
 
     [MaxLength(20)]
-    public string? WorkMode { get; set; } // WFO / WFH / Hybrid
+    public WorkMode? WorkMode { get; set; }
 
     [Required]
-    public DateTime AttendanceDate { get; set; }
+    public DateOnly AttendanceDate { get; set; }
 
     public Employee? Employee { get; set; }
 }

@@ -1,6 +1,7 @@
 using WMS.Application.DTOs.Auth;
 using WMS.Application.Interfaces;
 using WMS.Domain.Interfaces;
+using WMS.Application.Common.Exceptions;
 
 namespace WMS.Application.Services;
 
@@ -20,12 +21,17 @@ public class AuthService : IAuthService
         var user = await _authRepository.GetByUsernameAsync(request.Username);
 
         if (user == null)
-            return null;
+        {
+            throw new UnauthorizedException(
+                "Invalid username or password");
+        }
 
         bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
 
         if (!isPasswordValid)
-            return null;
+        {
+            throw new UnauthorizedException("Invalid username or password");
+        }
 
         var token = _jwtTokenGenerator.GenerateToken(user);
 

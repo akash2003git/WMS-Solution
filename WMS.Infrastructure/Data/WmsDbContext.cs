@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using WMS.Domain.Entities;
-using BCrypt.Net;
 
 namespace WMS.Infrastructure.Data;
 
@@ -39,9 +38,45 @@ public class WmsDbContext(DbContextOptions<WmsDbContext> options) : DbContext(op
             }
         );
 
+        modelBuilder.Entity<Employee>()
+            .ToTable(t => t
+                .HasCheckConstraint("CK_Employee_Gender", "Gender IN ('M','F','O')"));
+
+        modelBuilder.Entity<Employee>()
+          .HasIndex(e => e.Email)
+          .IsUnique();
+
+        modelBuilder.Entity<UserLogin>()
+          .HasIndex(u => u.Username)
+          .IsUnique();
+
         modelBuilder.Entity<Attendance>()
           .Property(a => a.TotalHours)
           .HasComputedColumnSql("DATEDIFF(MINUTE, CheckIn, CheckOut) / 60.0", stored: true);
+
+        modelBuilder.Entity<AuditLog>()
+            .Property(a => a.Action)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Employee>()
+            .Property(e => e.Status)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Leave>()
+            .Property(l => l.Status)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Leave>()
+            .Property(l => l.LeaveType)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Project>()
+            .Property(p => p.Status)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Attendance>()
+            .Property(a => a.WorkMode)
+            .HasConversion<string>();
 
         modelBuilder.Entity<Attendance>()
           .HasOne(a => a.Employee)

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WMS.Domain.Enums;
 
 namespace WMS.Domain.Entities;
 
@@ -14,11 +15,12 @@ public class Project
     [ForeignKey(nameof(Client))]
     public int? ClientId { get; set; }
 
-    public DateTime? StartDate { get; set; }
-    public DateTime? EndDate { get; set; }
+    public DateOnly? StartDate { get; set; }
+
+    public DateOnly? EndDate { get; set; }
 
     [MaxLength(20)]
-    public string Status { get; set; } = "Active";
+    public ProjectStatus Status { get; set; } = ProjectStatus.Active;
 
     public Client? Client { get; set; }
     public ICollection<EmployeeProject> EmployeeAllocations { get; set; } = [];

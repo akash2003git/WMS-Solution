@@ -26,4 +26,10 @@ public class TestController : ControllerBase
     {
         return Ok("Admin endpoint");
     }
+
+    [HttpGet("error")]
+    public IActionResult Error()
+    {
+        throw new Exception("Test exception");
+    }
 }

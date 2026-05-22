@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WMS.Domain.Enums;
 
 namespace WMS.Domain.Entities;
 
@@ -12,19 +13,19 @@ public class Leave
     public int EmpId { get; set; }
 
     [Required, MaxLength(30)]
-    public string LeaveType { get; set; } = string.Empty; // Sick / Casual / Earned
+    public LeaveType LeaveType { get; set; }
 
     [MaxLength(255)]
     public string? Reason { get; set; }
 
     [Required]
-    public DateTime FromDate { get; set; }
+    public DateOnly FromDate { get; set; }
 
     [Required]
-    public DateTime ToDate { get; set; }
+    public DateOnly ToDate { get; set; }
 
     [MaxLength(20)]
-    public string Status { get; set; } = "Pending";
+    public LeaveStatus Status { get; set; } = LeaveStatus.Pending;
 
     public DateTime AppliedOn { get; set; } = DateTime.UtcNow;
 

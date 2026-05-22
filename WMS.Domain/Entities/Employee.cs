@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WMS.Domain.Enums;
 
 namespace WMS.Domain.Entities;
 
@@ -24,10 +25,10 @@ public class Employee
     public char Gender { get; set; }
 
     [Required]
-    public DateTime DOB { get; set; }
+    public DateOnly DOB { get; set; }
 
     [Required]
-    public DateTime DOJ { get; set; }
+    public DateOnly DOJ { get; set; }
 
     [ForeignKey(nameof(Department))]
     public int DepartmentId { get; set; }
@@ -36,7 +37,7 @@ public class Employee
     public int RoleId { get; set; }
 
     [MaxLength(20)]
-    public string Status { get; set; } = "Active";
+    public EmployeeStatus Status { get; set; } = EmployeeStatus.Active;
 
     public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
