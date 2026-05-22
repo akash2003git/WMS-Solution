@@ -1,0 +1,67 @@
+## Build output
+bin/
+obj/
+out/
+
+## NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+project.lock.json
+project.assets.json
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+## VS Code
+.vscode/
+!.vscode/extensions.json
+
+## User Secrets (auto-generated on dotnet user-secrets init)
+**/secrets.json
+
+## Published output
+publish/
+**/publish/
+
+*.ModelSnapshot.cs.bak
+
+.env
+.env.*
+appsettings.Production.json
+appsettings.Staging.json
+
+logs/
+*.log
+*.log.*
+
+## Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+## macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+## Linux
+*~
+
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+*.trx
+
+docker-compose.override.yml
+
+*.bak
+*.tmp
+*.swp
