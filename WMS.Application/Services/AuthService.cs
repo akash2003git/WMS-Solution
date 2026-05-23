@@ -2,6 +2,8 @@ using WMS.Application.DTOs.Auth;
 using WMS.Application.Interfaces;
 using WMS.Domain.Interfaces;
 using WMS.Application.Common.Exceptions;
+using WMS.Application.DTOs.Employee;
+using WMS.Domain.Entities;
 
 namespace WMS.Application.Services;
 
@@ -16,7 +18,12 @@ public class AuthService : IAuthService
         _jwtTokenGenerator = jwtTokenGenerator;
     }
 
-    public async Task<LoginResponseDto?> LoginAsync(LoginRequestDto request)
+    private static string GenerateTemporaryPassword()
+    {
+        return $"Temp@{Random.Shared.Next(1000, 9999)}";
+    }
+
+    public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request)
     {
         var user = await _authRepository.GetByUsernameAsync(request.Username);
 
@@ -44,6 +51,51 @@ public class AuthService : IAuthService
             Role = user.Role.RoleName,
             Token = token,
             Expiration = DateTime.UtcNow.AddHours(1)
+        };
+    }
+
+    public async Task<CreateEmployeeResponseDto> CreateEmployeeAsync(CreateEmployeeRequestDto request)
+    {
+        bool usernameExists = await _authRepository
+            .UsernameExistsAsync(request.Email);
+
+        if (usernameExists)
+        {
+            throw new BusinessRuleException("User already exists");
+        }
+
+        string tempPassword = GenerateTemporaryPassword();
+
+        string passwordHash = BCrypt.Net.BCrypt.HashPassword(tempPassword);
+
+        var employee = new Employee
+        {
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email,
+            PhoneNumber = request.PhoneNumber,
+            Gender = request.Gender,
+            DOB = request.DOB,
+            DOJ = request.DOJ,
+            DepartmentId = request.DepartmentId,
+            RoleId = request.RoleId
+        };
+
+        var userLogin = new UserLogin
+        {
+            Username = request.Email,
+            PasswordHash = passwordHash,
+            RoleId = request.RoleId,
+            MustChangePassword = true
+        };
+
+        await _authRepository.CreateEmployeeAsync(employee, userLogin);
+
+        return new CreateEmployeeResponseDto
+        {
+            EmployeeId = employee.EmployeeId,
+            Username = userLogin.Username,
+            TemporaryPassword = tempPassword
         };
     }
 }

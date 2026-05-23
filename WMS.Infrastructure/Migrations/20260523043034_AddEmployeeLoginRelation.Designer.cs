@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WMS.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using WMS.Infrastructure.Data;
 namespace WMS.Infrastructure.Migrations
 {
     [DbContext(typeof(WmsDbContext))]
-    partial class WmsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260523043034_AddEmployeeLoginRelation")]
+    partial class AddEmployeeLoginRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -176,36 +179,6 @@ namespace WMS.Infrastructure.Migrations
                     b.HasKey("DepartmentId");
 
                     b.ToTable("Departments");
-
-                    b.HasData(
-                        new
-                        {
-                            DepartmentId = 1,
-                            CreatedOn = new DateTime(2026, 5, 23, 4, 36, 56, 676, DateTimeKind.Utc).AddTicks(5175),
-                            DepartmentName = "Human Resources",
-                            Description = "HR Department"
-                        },
-                        new
-                        {
-                            DepartmentId = 2,
-                            CreatedOn = new DateTime(2026, 5, 23, 4, 36, 56, 676, DateTimeKind.Utc).AddTicks(5177),
-                            DepartmentName = "Engineering",
-                            Description = "Engineering Department"
-                        },
-                        new
-                        {
-                            DepartmentId = 3,
-                            CreatedOn = new DateTime(2026, 5, 23, 4, 36, 56, 676, DateTimeKind.Utc).AddTicks(5178),
-                            DepartmentName = "Finance",
-                            Description = "Finance Department"
-                        },
-                        new
-                        {
-                            DepartmentId = 4,
-                            CreatedOn = new DateTime(2026, 5, 23, 4, 36, 56, 676, DateTimeKind.Utc).AddTicks(5179),
-                            DepartmentName = "Operations",
-                            Description = "Operations Department"
-                        });
                 });
 
             modelBuilder.Entity("WMS.Domain.Entities.Employee", b =>

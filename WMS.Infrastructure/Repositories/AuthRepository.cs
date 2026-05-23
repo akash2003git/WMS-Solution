@@ -38,4 +38,22 @@ public class AuthRepository : IAuthRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    public async Task<bool> UsernameExistsAsync(string username)
+    {
+        return await _context.UserLogins.AnyAsync(u => u.Username == username);
+    }
+
+    public async Task CreateEmployeeAsync(Employee employee, UserLogin userLogin)
+    {
+        await _context.Employees.AddAsync(employee);
+
+        await _context.SaveChangesAsync();
+
+        userLogin.EmployeeId = employee.EmployeeId;
+
+        await _context.UserLogins.AddAsync(userLogin);
+
+        await _context.SaveChangesAsync();
+    }
 }

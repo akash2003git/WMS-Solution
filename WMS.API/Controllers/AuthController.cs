@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using WMS.Application.DTOs.Auth;
 using WMS.Application.Interfaces;
 using WMS.Application.Common.Responses;
+using WMS.Application.DTOs.Employee;
 
 namespace WMS.API.Controllers;
 
@@ -23,5 +24,14 @@ public class AuthController : ControllerBase
 
         return Ok(ApiResponse<LoginResponseDto>
             .SuccessResponse(response, "Login successful"));
+    }
+
+    [HttpPost("create-employee")]
+    public async Task<IActionResult> CreateEmployee(CreateEmployeeRequestDto request)
+    {
+        var response = await _authService.CreateEmployeeAsync(request);
+
+        return Ok(ApiResponse<CreateEmployeeResponseDto>
+            .SuccessResponse(response, "Employee created successfully"));
     }
 }

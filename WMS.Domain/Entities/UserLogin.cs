@@ -17,7 +17,14 @@ public class UserLogin
     [ForeignKey(nameof(Role))]
     public int RoleId { get; set; }
 
+    [ForeignKey(nameof(Employee))]
+    public int? EmployeeId { get; set; }
+
+    public bool MustChangePassword { get; set; } = true;
+
     public DateTime? LastLogin { get; set; }
 
     public Role Role { get; set; } = null!;
+
+    public Employee Employee { get; set; } = null!;
 }

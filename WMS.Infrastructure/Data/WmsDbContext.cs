@@ -25,6 +25,33 @@ public class WmsDbContext(DbContextOptions<WmsDbContext> options) : DbContext(op
             new Role { RoleId = 3, RoleName = "Employee", Description = "Standard Employee" }
         );
 
+        modelBuilder.Entity<Department>().HasData(
+            new Department
+            {
+                DepartmentId = 1,
+                DepartmentName = "Human Resources",
+                Description = "HR Department"
+            },
+            new Department
+            {
+                DepartmentId = 2,
+                DepartmentName = "Engineering",
+                Description = "Engineering Department"
+            },
+            new Department
+            {
+                DepartmentId = 3,
+                DepartmentName = "Finance",
+                Description = "Finance Department"
+            },
+            new Department
+            {
+                DepartmentId = 4,
+                DepartmentName = "Operations",
+                Description = "Operations Department"
+            }
+        );
+
         // Console.WriteLine(BCrypt.Net.BCrypt.HashPassword("Admin@123"));
 
         modelBuilder.Entity<UserLogin>().HasData(
@@ -37,6 +64,12 @@ public class WmsDbContext(DbContextOptions<WmsDbContext> options) : DbContext(op
                 LastLogin = null
             }
         );
+
+        modelBuilder.Entity<UserLogin>()
+            .HasOne(u => u.Employee)
+            .WithOne(e => e.UserLogin)
+            .HasForeignKey<UserLogin>(u => u.EmployeeId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Employee>()
             .ToTable(t => t

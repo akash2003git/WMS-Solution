@@ -52,4 +52,6 @@ public class Employee
     public ICollection<Leave> Leaves { get; set; } = [];
 
     public ICollection<EmployeeProject> ProjectAllocations { get; set; } = [];
+
+    public UserLogin? UserLogin { get; set; }
 }
