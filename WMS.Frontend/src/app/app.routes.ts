@@ -8,6 +8,7 @@ import { Unauthorized } from './shared/components/unauthorized/unauthorized';
 import { authGuard } from './core/guards/auth-guard';
 import { roleGuard } from './core/guards/role-guard';
 import { loginRedirectGuard } from './core/guards/login-redirect-guard';
+import { ResetPassword } from './features/auth/pages/reset-password/reset-password';
 
 export const appRoutes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -44,5 +45,6 @@ export const appRoutes: Routes = [
       }
     ]
   },
+  { path: 'reset-password', component: ResetPassword },
   { path: '**', redirectTo: 'login' }
 ];

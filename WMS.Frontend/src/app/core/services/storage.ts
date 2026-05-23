@@ -5,7 +5,6 @@ import { Injectable } from '@angular/core';
 })
 export class StorageService {
   private readonly TOKEN_KEY = 'wms_token';
-
   private readonly USER_KEY = 'wms_user';
 
   setToken(token: string): void {
@@ -26,7 +25,6 @@ export class StorageService {
 
   getUser<T>(): T | null {
     const user = localStorage.getItem(this.USER_KEY);
-
     return user ? JSON.parse(user) : null;
   }
 

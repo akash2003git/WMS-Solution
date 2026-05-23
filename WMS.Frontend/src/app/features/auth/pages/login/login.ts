@@ -1,12 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
-import { AuthService } from '../../services/auth';
 import { MATERIAL_MODULES } from '../../../../shared/material/material';
-import { CommonModule } from '@angular/common';
-
+import { AuthService } from '../../services/auth';
 @Component({
   selector: 'app-login',
   imports: [
@@ -22,10 +21,10 @@ export class Login {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly toastr = inject(ToastrService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   isLoading = false;
   hidePassword = true;
-
   loginForm = this.fb.group({
     username: ['', [Validators.required]],
     password: ['', [Validators.required]]
@@ -47,16 +46,21 @@ export class Login {
       .pipe(
         finalize(() => {
           this.isLoading = false;
-        }))
+          this.cdr.detectChanges();
+        })
+      )
       .subscribe({
         next: (response) => {
           const data = response.data;
           this.toastr.success(response.message);
 
           if (data.requiresPasswordChange) {
+            sessionStorage.setItem('reset_username', data.username);
             this.router.navigate(['/reset-password']);
             return;
           }
+
+          this.authService.setSession(data);
 
           switch (data.role) {
             case 'Admin':
@@ -77,7 +81,9 @@ export class Login {
         },
 
         error: (error) => {
-          const message = error?.error?.message || 'Login failed';
+          const message = error?.error?.Message
+            || error?.error?.Errors?.[0]
+            || 'Login failed';
           this.toastr.error(message);
         }
       });
