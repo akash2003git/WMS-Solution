@@ -1,1 +1,33 @@
-<p>main-layout works!</p>
+<mat-toolbar color="primary">
+
+  <span class="font-bold">
+    WMS Portal
+  </span>
+
+  <span class="flex-1"></span>
+
+  @if (currentUser) {
+
+    <span class="mr-4">
+      {{ currentUser.username }}
+      ({{ currentUser.role }})
+    </span>
+
+  }
+
+  <button
+    mat-raised-button
+    color="warn"
+    (click)="logout()">
+
+    Logout
+
+  </button>
+
+</mat-toolbar>
+
+<div class="p-6">
+
+  <router-outlet />
+
+</div>
