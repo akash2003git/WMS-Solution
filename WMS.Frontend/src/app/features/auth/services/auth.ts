@@ -8,6 +8,8 @@ import { ResetPasswordRequest } from '../models/reset-password.model';
 import { ApiResponse } from '../../../core/models/api-response.model';
 import { CurrentUser } from '../../../core/models/current-user.model';
 import { StorageService } from '../../../core/services/storage';
+import { jwtDecode } from 'jwt-decode';
+import { JwtPayload } from '../../../core/models/jwt-payload.model';
 
 @Injectable({
   providedIn: 'root'
@@ -20,8 +22,24 @@ export class AuthService {
 
   private readonly currentUserSubject =
     new BehaviorSubject<CurrentUser | null>(
-      this.storageService.getUser<CurrentUser>()
+      this.initializeUser()
     );
+
+  private initializeUser(): CurrentUser | null {
+    const token = this.storageService.getToken();
+
+    const user = this.storageService.getUser<CurrentUser>();
+    if (!token || !user) {
+      return null;
+    }
+
+    if (this.isTokenExpired(token)) {
+      this.logout();
+      return null;
+    }
+
+    return user;
+  }
 
   currentUser$ = this.currentUserSubject.asObservable();
 
@@ -42,11 +60,35 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) {
+      return false;
+    }
+
+    const isExpired = this.isTokenExpired(token);
+    if (isExpired) {
+      this.logout();
+      return false;
+    }
+
+    return true;
   }
 
   getCurrentUser(): CurrentUser | null {
     return this.currentUserSubject.value;
+  }
+
+  isTokenExpired(token: string): boolean {
+    try {
+      const decoded = jwtDecode<JwtPayload>(token);
+      if (!decoded.exp) {
+        return true;
+      }
+      const expiration = decoded.exp * 1000;
+      return Date.now() > expiration;
+    } catch {
+      return true;
+    }
   }
 
   resetPassword(request: ResetPasswordRequest) {
