@@ -73,6 +73,14 @@ public class WmsDbContext(DbContextOptions<WmsDbContext> options) : DbContext(op
             })
             .IsUnique();
 
+        modelBuilder.Entity<Leave>()
+            .HasIndex(l => new
+            {
+                l.EmpId,
+                l.FromDate,
+                l.ToDate
+            });
+
         modelBuilder.Entity<UserLogin>()
             .HasOne(u => u.Employee)
             .WithOne(e => e.UserLogin)
