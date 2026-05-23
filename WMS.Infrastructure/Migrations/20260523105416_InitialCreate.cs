@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace WMS.Infrastructure.Migrations
 {
     /// <inheritdoc />
@@ -19,11 +17,12 @@ namespace WMS.Infrastructure.Migrations
                 {
                     AuditId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    EntityName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EntityName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     RecordId = table.Column<int>(type: "int", nullable: false),
-                    Action = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    CreatedBy = table.Column<int>(type: "int", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Action = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: true),
+                    PerformedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -38,7 +37,7 @@ namespace WMS.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ClientName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ClientAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClientPhoneNumber = table.Column<decimal>(type: "numeric(10,0)", nullable: true),
+                    ClientPhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
                     ClientLocation = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Status = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -84,8 +83,8 @@ namespace WMS.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProjectName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ClientId = table.Column<int>(type: "int", nullable: true),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    EndDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
                 },
                 constraints: table =>
@@ -110,8 +109,8 @@ namespace WMS.Infrastructure.Migrations
                     Email = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     Gender = table.Column<string>(type: "nvarchar(1)", nullable: false),
-                    DOB = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DOJ = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DOB = table.Column<DateOnly>(type: "date", nullable: false),
+                    DOJ = table.Column<DateOnly>(type: "date", nullable: false),
                     DepartmentId = table.Column<int>(type: "int", nullable: false),
                     RoleId = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
@@ -121,6 +120,7 @@ namespace WMS.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Employees", x => x.EmployeeId);
+                    table.CheckConstraint("CK_Employee_Gender", "Gender IN ('M','F','O')");
                     table.ForeignKey(
                         name: "FK_Employees_Departments_DepartmentId",
                         column: x => x.DepartmentId,
@@ -136,51 +136,6 @@ namespace WMS.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserLogins",
-                columns: table => new
-                {
-                    UserId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false),
-                    LastLogin = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserLogins", x => x.UserId);
-                    table.ForeignKey(
-                        name: "FK_UserLogins_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "Roles",
-                        principalColumn: "RoleId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Announcements",
-                columns: table => new
-                {
-                    AnnouncementId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedBy = table.Column<int>(type: "int", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Announcements", x => x.AnnouncementId);
-                    table.ForeignKey(
-                        name: "FK_Announcements_Employees_CreatedBy",
-                        column: x => x.CreatedBy,
-                        principalTable: "Employees",
-                        principalColumn: "EmployeeId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Attendances",
                 columns: table => new
                 {
@@ -189,9 +144,9 @@ namespace WMS.Infrastructure.Migrations
                     EmpId = table.Column<int>(type: "int", nullable: false),
                     CheckIn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CheckOut = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    TotalHours = table.Column<double>(type: "float", nullable: true, computedColumnSql: "DATEDIFF(MINUTE, CheckIn, CheckOut) / 60.0", stored: true),
+                    TotalHours = table.Column<double>(type: "float", nullable: true, computedColumnSql: "CAST(DATEDIFF(MINUTE, CheckIn, CheckOut) AS FLOAT) / 60.0", stored: true),
                     WorkMode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    AttendanceDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    AttendanceDate = table.Column<DateOnly>(type: "date", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -212,12 +167,12 @@ namespace WMS.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     EmpId = table.Column<int>(type: "int", nullable: false),
                     ProjectId = table.Column<int>(type: "int", nullable: false),
-                    AssignedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AssignedOn = table.Column<DateOnly>(type: "date", nullable: false),
+                    CreateDate = table.Column<DateOnly>(type: "date", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     UpdatedBy = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    UpdatedDate = table.Column<DateOnly>(type: "date", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -245,8 +200,8 @@ namespace WMS.Infrastructure.Migrations
                     EmpId = table.Column<int>(type: "int", nullable: false),
                     LeaveType = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     Reason = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    FromDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ToDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FromDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    ToDate = table.Column<DateOnly>(type: "date", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     AppliedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ApprovedBy = table.Column<int>(type: "int", nullable: true),
@@ -263,14 +218,57 @@ namespace WMS.Infrastructure.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Roles",
-                columns: new[] { "RoleId", "Description", "RoleName" },
-                values: new object[,]
+            migrationBuilder.CreateTable(
+                name: "UserLogins",
+                columns: table => new
                 {
-                    { 1, "System Administrator", "Admin" },
-                    { 2, "Team Manager", "Manager" },
-                    { 3, "Standard Employee", "Employee" }
+                    UserId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: true),
+                    MustChangePassword = table.Column<bool>(type: "bit", nullable: false),
+                    LastLogin = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserLogins", x => x.UserId);
+                    table.ForeignKey(
+                        name: "FK_UserLogins_Employees_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "Employees",
+                        principalColumn: "EmployeeId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserLogins_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "RoleId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Announcements",
+                columns: table => new
+                {
+                    AnnouncementId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedBy = table.Column<int>(type: "int", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Announcements", x => x.AnnouncementId);
+                    table.ForeignKey(
+                        name: "FK_Announcements_UserLogins_CreatedBy",
+                        column: x => x.CreatedBy,
+                        principalTable: "UserLogins",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -279,14 +277,15 @@ namespace WMS.Infrastructure.Migrations
                 column: "CreatedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Attendances_EmpId",
+                name: "IX_Attendances_EmpId_AttendanceDate",
                 table: "Attendances",
-                column: "EmpId");
+                columns: new[] { "EmpId", "AttendanceDate" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_EmployeeProjects_EmpId",
+                name: "IX_EmployeeProjects_EmpId_ProjectId_Status",
                 table: "EmployeeProjects",
-                column: "EmpId");
+                columns: new[] { "EmpId", "ProjectId", "Status" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmployeeProjects_ProjectId",
@@ -299,14 +298,20 @@ namespace WMS.Infrastructure.Migrations
                 column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Employees_Email",
+                table: "Employees",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Employees_RoleId",
                 table: "Employees",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Leaves_EmpId",
+                name: "IX_Leaves_EmpId_FromDate_ToDate",
                 table: "Leaves",
-                column: "EmpId");
+                columns: new[] { "EmpId", "FromDate", "ToDate" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_ClientId",
@@ -314,9 +319,22 @@ namespace WMS.Infrastructure.Migrations
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserLogins_EmployeeId",
+                table: "UserLogins",
+                column: "EmployeeId",
+                unique: true,
+                filter: "[EmployeeId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserLogins_RoleId",
                 table: "UserLogins",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserLogins_Username",
+                table: "UserLogins",
+                column: "Username",
+                unique: true);
         }
 
         /// <inheritdoc />

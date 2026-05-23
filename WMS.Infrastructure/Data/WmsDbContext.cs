@@ -30,51 +30,51 @@ public class WmsDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Role>().HasData(
-            new Role { RoleId = 1, RoleName = "Admin", Description = "System Administrator" },
-            new Role { RoleId = 2, RoleName = "Manager", Description = "Team Manager" },
-            new Role { RoleId = 3, RoleName = "Employee", Description = "Standard Employee" }
-        );
-
-        modelBuilder.Entity<Department>().HasData(
-            new Department
-            {
-                DepartmentId = 1,
-                DepartmentName = "Human Resources",
-                Description = "HR Department"
-            },
-            new Department
-            {
-                DepartmentId = 2,
-                DepartmentName = "Engineering",
-                Description = "Engineering Department"
-            },
-            new Department
-            {
-                DepartmentId = 3,
-                DepartmentName = "Finance",
-                Description = "Finance Department"
-            },
-            new Department
-            {
-                DepartmentId = 4,
-                DepartmentName = "Operations",
-                Description = "Operations Department"
-            }
-        );
-
-        // Console.WriteLine(BCrypt.Net.BCrypt.HashPassword("Admin@123"));
-
-        modelBuilder.Entity<UserLogin>().HasData(
-            new UserLogin
-            {
-                UserId = 1,
-                Username = "admin",
-                PasswordHash = "$2a$11$iBjFJvLHdAO92u5Woyz9d.mL3urAktHEJYr4YS4NTZaTfU2O3aBZS",
-                RoleId = 1,
-                LastLogin = null
-            }
-        );
+        // modelBuilder.Entity<Role>().HasData(
+        //     new Role { RoleId = 1, RoleName = "Admin", Description = "System Administrator" },
+        //     new Role { RoleId = 2, RoleName = "Manager", Description = "Team Manager" },
+        //     new Role { RoleId = 3, RoleName = "Employee", Description = "Standard Employee" }
+        // );
+        //
+        // modelBuilder.Entity<Department>().HasData(
+        //     new Department
+        //     {
+        //         DepartmentId = 1,
+        //         DepartmentName = "Human Resources",
+        //         Description = "HR Department"
+        //     },
+        //     new Department
+        //     {
+        //         DepartmentId = 2,
+        //         DepartmentName = "Engineering",
+        //         Description = "Engineering Department"
+        //     },
+        //     new Department
+        //     {
+        //         DepartmentId = 3,
+        //         DepartmentName = "Finance",
+        //         Description = "Finance Department"
+        //     },
+        //     new Department
+        //     {
+        //         DepartmentId = 4,
+        //         DepartmentName = "Operations",
+        //         Description = "Operations Department"
+        //     }
+        // );
+        //
+        // // Console.WriteLine(BCrypt.Net.BCrypt.HashPassword("Admin@123"));
+        //
+        // modelBuilder.Entity<UserLogin>().HasData(
+        //     new UserLogin
+        //     {
+        //         UserId = 1,
+        //         Username = "admin",
+        //         PasswordHash = "$2a$11$iBjFJvLHdAO92u5Woyz9d.mL3urAktHEJYr4YS4NTZaTfU2O3aBZS",
+        //         RoleId = 1,
+        //         LastLogin = null
+        //     }
+        // );
 
         modelBuilder.Entity<Attendance>()
             .HasIndex(a => new

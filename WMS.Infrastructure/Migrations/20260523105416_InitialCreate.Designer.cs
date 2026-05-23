@@ -12,8 +12,8 @@ using WMS.Infrastructure.Data;
 namespace WMS.Infrastructure.Migrations
 {
     [DbContext(typeof(WmsDbContext))]
-    [Migration("20260523101745_AddAutomaticAuditLogging")]
-    partial class AddAutomaticAuditLogging
+    [Migration("20260523105416_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -108,6 +108,9 @@ namespace WMS.Infrastructure.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("EntityName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -184,36 +187,6 @@ namespace WMS.Infrastructure.Migrations
                     b.HasKey("DepartmentId");
 
                     b.ToTable("Departments");
-
-                    b.HasData(
-                        new
-                        {
-                            DepartmentId = 1,
-                            CreatedOn = new DateTime(2026, 5, 23, 10, 17, 44, 925, DateTimeKind.Utc).AddTicks(5462),
-                            DepartmentName = "Human Resources",
-                            Description = "HR Department"
-                        },
-                        new
-                        {
-                            DepartmentId = 2,
-                            CreatedOn = new DateTime(2026, 5, 23, 10, 17, 44, 925, DateTimeKind.Utc).AddTicks(5464),
-                            DepartmentName = "Engineering",
-                            Description = "Engineering Department"
-                        },
-                        new
-                        {
-                            DepartmentId = 3,
-                            CreatedOn = new DateTime(2026, 5, 23, 10, 17, 44, 925, DateTimeKind.Utc).AddTicks(5465),
-                            DepartmentName = "Finance",
-                            Description = "Finance Department"
-                        },
-                        new
-                        {
-                            DepartmentId = 4,
-                            CreatedOn = new DateTime(2026, 5, 23, 10, 17, 44, 925, DateTimeKind.Utc).AddTicks(5466),
-                            DepartmentName = "Operations",
-                            Description = "Operations Department"
-                        });
                 });
 
             modelBuilder.Entity("WMS.Domain.Entities.Employee", b =>
@@ -431,26 +404,6 @@ namespace WMS.Infrastructure.Migrations
                     b.HasKey("RoleId");
 
                     b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            RoleId = 1,
-                            Description = "System Administrator",
-                            RoleName = "Admin"
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            Description = "Team Manager",
-                            RoleName = "Manager"
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            Description = "Standard Employee",
-                            RoleName = "Employee"
-                        });
                 });
 
             modelBuilder.Entity("WMS.Domain.Entities.UserLogin", b =>
@@ -494,16 +447,6 @@ namespace WMS.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("UserLogins");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            MustChangePassword = true,
-                            PasswordHash = "$2a$11$iBjFJvLHdAO92u5Woyz9d.mL3urAktHEJYr4YS4NTZaTfU2O3aBZS",
-                            RoleId = 1,
-                            Username = "admin"
-                        });
                 });
 
             modelBuilder.Entity("WMS.Domain.Entities.Announcement", b =>

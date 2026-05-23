@@ -150,4 +150,13 @@ app.UseGlobalExceptionMiddleware();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider
+      .GetRequiredService<WmsDbContext>();
+
+    await DbSeeder.SeedAsync(context);
+}
+
 app.Run();
