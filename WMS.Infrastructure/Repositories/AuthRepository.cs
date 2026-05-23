@@ -31,7 +31,6 @@ public class AuthRepository : IAuthRepository
     public async Task UpdateLastLoginAsync(int userId)
     {
         var user = await _context.UserLogins.FindAsync(userId);
-
         if (user != null)
         {
             user.LastLogin = DateTime.UtcNow;
@@ -39,21 +38,9 @@ public class AuthRepository : IAuthRepository
         }
     }
 
-    public async Task<bool> UsernameExistsAsync(string username)
+    public async Task UpdateUserAsync(UserLogin user)
     {
-        return await _context.UserLogins.AnyAsync(u => u.Username == username);
-    }
-
-    public async Task CreateEmployeeAsync(Employee employee, UserLogin userLogin)
-    {
-        await _context.Employees.AddAsync(employee);
-
-        await _context.SaveChangesAsync();
-
-        userLogin.EmployeeId = employee.EmployeeId;
-
-        await _context.UserLogins.AddAsync(userLogin);
-
+        _context.UserLogins.Update(user);
         await _context.SaveChangesAsync();
     }
 }

@@ -2,8 +2,6 @@ using WMS.Application.DTOs.Auth;
 using WMS.Application.Interfaces;
 using WMS.Domain.Interfaces;
 using WMS.Application.Common.Exceptions;
-using WMS.Application.DTOs.Employee;
-using WMS.Domain.Entities;
 
 namespace WMS.Application.Services;
 
@@ -16,11 +14,6 @@ public class AuthService : IAuthService
     {
         _authRepository = authRepository;
         _jwtTokenGenerator = jwtTokenGenerator;
-    }
-
-    private static string GenerateTemporaryPassword()
-    {
-        return $"Temp@{Random.Shared.Next(1000, 9999)}";
     }
 
     public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request)
@@ -50,52 +43,32 @@ public class AuthService : IAuthService
             Username = user.Username,
             Role = user.Role.RoleName,
             Token = token,
-            Expiration = DateTime.UtcNow.AddHours(1)
+            Expiration = DateTime.UtcNow.AddHours(1),
+            RequiresPasswordChange = user.MustChangePassword
         };
     }
 
-    public async Task<CreateEmployeeResponseDto> CreateEmployeeAsync(CreateEmployeeRequestDto request)
+    public async Task ResetPasswordAsync(ResetPasswordDto request)
     {
-        bool usernameExists = await _authRepository
-            .UsernameExistsAsync(request.Email);
+        var user = await _authRepository.GetByUsernameAsync(request.Username);
 
-        if (usernameExists)
+        if (user == null)
         {
-            throw new BusinessRuleException("User already exists");
+            throw new UnauthorizedException("Invalid credentials");
         }
 
-        string tempPassword = GenerateTemporaryPassword();
+        bool isCurrentPasswordValid = BCrypt.Net.BCrypt
+            .Verify(request.CurrentPassword, user.PasswordHash);
 
-        string passwordHash = BCrypt.Net.BCrypt.HashPassword(tempPassword);
-
-        var employee = new Employee
+        if (!isCurrentPasswordValid)
         {
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Email = request.Email,
-            PhoneNumber = request.PhoneNumber,
-            Gender = request.Gender,
-            DOB = request.DOB,
-            DOJ = request.DOJ,
-            DepartmentId = request.DepartmentId,
-            RoleId = request.RoleId
-        };
+            throw new UnauthorizedException("Current password is incorrect");
+        }
 
-        var userLogin = new UserLogin
-        {
-            Username = request.Email,
-            PasswordHash = passwordHash,
-            RoleId = request.RoleId,
-            MustChangePassword = true
-        };
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
 
-        await _authRepository.CreateEmployeeAsync(employee, userLogin);
+        user.MustChangePassword = false;
 
-        return new CreateEmployeeResponseDto
-        {
-            EmployeeId = employee.EmployeeId,
-            Username = userLogin.Username,
-            TemporaryPassword = tempPassword
-        };
+        await _authRepository.UpdateUserAsync(user);
     }
 }

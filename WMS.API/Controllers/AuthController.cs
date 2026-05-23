@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using WMS.Application.DTOs.Auth;
 using WMS.Application.Interfaces;
 using WMS.Application.Common.Responses;
-using WMS.Application.DTOs.Employee;
 
 namespace WMS.API.Controllers;
 
@@ -26,12 +25,12 @@ public class AuthController : ControllerBase
             .SuccessResponse(response, "Login successful"));
     }
 
-    [HttpPost("create-employee")]
-    public async Task<IActionResult> CreateEmployee(CreateEmployeeRequestDto request)
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword(ResetPasswordDto request)
     {
-        var response = await _authService.CreateEmployeeAsync(request);
+        await _authService.ResetPasswordAsync(request);
 
-        return Ok(ApiResponse<CreateEmployeeResponseDto>
-            .SuccessResponse(response, "Employee created successfully"));
+        return Ok(ApiResponse<string>
+            .SuccessResponse(null!, "Password reset successful"));
     }
 }

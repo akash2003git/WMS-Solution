@@ -109,6 +109,10 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
 var app = builder.Build();
