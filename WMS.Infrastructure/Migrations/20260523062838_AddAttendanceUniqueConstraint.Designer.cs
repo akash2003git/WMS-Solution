@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WMS.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using WMS.Infrastructure.Data;
 namespace WMS.Infrastructure.Migrations
 {
     [DbContext(typeof(WmsDbContext))]
-    partial class WmsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260523062838_AddAttendanceUniqueConstraint")]
+    partial class AddAttendanceUniqueConstraint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,7 +81,7 @@ namespace WMS.Infrastructure.Migrations
                     b.Property<double?>("TotalHours")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("float")
-                        .HasComputedColumnSql("CAST(DATEDIFF(MINUTE, CheckIn, CheckOut) AS FLOAT) / 60.0", true);
+                        .HasComputedColumnSql("DATEDIFF(MINUTE, CheckIn, CheckOut) / 60.0", true);
 
                     b.Property<string>("WorkMode")
                         .HasMaxLength(20)
@@ -182,28 +185,28 @@ namespace WMS.Infrastructure.Migrations
                         new
                         {
                             DepartmentId = 1,
-                            CreatedOn = new DateTime(2026, 5, 23, 6, 38, 13, 32, DateTimeKind.Utc).AddTicks(5107),
+                            CreatedOn = new DateTime(2026, 5, 23, 6, 28, 37, 874, DateTimeKind.Utc).AddTicks(5763),
                             DepartmentName = "Human Resources",
                             Description = "HR Department"
                         },
                         new
                         {
                             DepartmentId = 2,
-                            CreatedOn = new DateTime(2026, 5, 23, 6, 38, 13, 32, DateTimeKind.Utc).AddTicks(5109),
+                            CreatedOn = new DateTime(2026, 5, 23, 6, 28, 37, 874, DateTimeKind.Utc).AddTicks(5765),
                             DepartmentName = "Engineering",
                             Description = "Engineering Department"
                         },
                         new
                         {
                             DepartmentId = 3,
-                            CreatedOn = new DateTime(2026, 5, 23, 6, 38, 13, 32, DateTimeKind.Utc).AddTicks(5110),
+                            CreatedOn = new DateTime(2026, 5, 23, 6, 28, 37, 874, DateTimeKind.Utc).AddTicks(5766),
                             DepartmentName = "Finance",
                             Description = "Finance Department"
                         },
                         new
                         {
                             DepartmentId = 4,
-                            CreatedOn = new DateTime(2026, 5, 23, 6, 38, 13, 32, DateTimeKind.Utc).AddTicks(5111),
+                            CreatedOn = new DateTime(2026, 5, 23, 6, 28, 37, 874, DateTimeKind.Utc).AddTicks(5767),
                             DepartmentName = "Operations",
                             Description = "Operations Department"
                         });

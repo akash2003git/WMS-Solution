@@ -34,4 +34,20 @@ public class CurrentUserService : ICurrentUserService
             .User?
             .FindFirst(ClaimTypes.Role)?.Value
         ?? string.Empty;
+
+    public int? EmployeeId
+    {
+        get
+        {
+            var value =
+                _httpContextAccessor
+                    .HttpContext?
+                    .User?
+                    .FindFirst("EmployeeId")?.Value;
+
+            return int.TryParse(value, out int employeeId)
+                ? employeeId
+                : null;
+        }
+    }
 }

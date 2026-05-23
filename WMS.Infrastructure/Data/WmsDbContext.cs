@@ -65,6 +65,14 @@ public class WmsDbContext(DbContextOptions<WmsDbContext> options) : DbContext(op
             }
         );
 
+        modelBuilder.Entity<Attendance>()
+            .HasIndex(a => new
+            {
+                a.EmpId,
+                a.AttendanceDate
+            })
+            .IsUnique();
+
         modelBuilder.Entity<UserLogin>()
             .HasOne(u => u.Employee)
             .WithOne(e => e.UserLogin)
@@ -85,7 +93,7 @@ public class WmsDbContext(DbContextOptions<WmsDbContext> options) : DbContext(op
 
         modelBuilder.Entity<Attendance>()
           .Property(a => a.TotalHours)
-          .HasComputedColumnSql("DATEDIFF(MINUTE, CheckIn, CheckOut) / 60.0", stored: true);
+          .HasComputedColumnSql("CAST(DATEDIFF(MINUTE, CheckIn, CheckOut) AS FLOAT) / 60.0", stored: true);
 
         modelBuilder.Entity<AuditLog>()
             .Property(a => a.Action)
