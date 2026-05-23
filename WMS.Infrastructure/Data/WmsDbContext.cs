@@ -81,6 +81,14 @@ public class WmsDbContext(DbContextOptions<WmsDbContext> options) : DbContext(op
                 l.ToDate
             });
 
+        modelBuilder.Entity<EmployeeProject>()
+            .HasIndex(ep => new
+            {
+                ep.EmpId,
+                ep.ProjectId,
+                ep.Status
+            });
+
         modelBuilder.Entity<UserLogin>()
             .HasOne(u => u.Employee)
             .WithOne(e => e.UserLogin)
