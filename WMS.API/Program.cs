@@ -138,6 +138,19 @@ builder.Services.AddScoped<IReportService, ReportService>();
 
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular",
+        policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:4200")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -147,6 +160,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseGlobalExceptionMiddleware();
+app.UseCors("AllowAngular");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
