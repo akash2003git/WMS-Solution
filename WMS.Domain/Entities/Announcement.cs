@@ -21,5 +21,5 @@ public class Announcement
 
     public bool IsActive { get; set; } = true;
 
-    public Employee? Creator { get; set; }
+    public UserLogin? Creator { get; set; }
 }
