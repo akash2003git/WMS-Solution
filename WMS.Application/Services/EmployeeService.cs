@@ -23,9 +23,7 @@ public class EmployeeService : IEmployeeService
         await ValidateEmployeeAsync(
             request.Email,
             request.DepartmentId,
-            request.RoleId,
-            request.DOB,
-            request.DOJ);
+            request.RoleId);
 
         string tempPassword = GenerateTemporaryPassword();
 
@@ -89,13 +87,16 @@ public class EmployeeService : IEmployeeService
         if (!string.IsNullOrWhiteSpace(filter.Search))
         {
             query = query.Where(e =>
-                e.FirstName.Contains(filter.Search,
+                e.FirstName.Contains(
+                    filter.Search,
                     StringComparison.OrdinalIgnoreCase)
                 ||
-                e.LastName.Contains(filter.Search,
+                e.LastName.Contains(
+                    filter.Search,
                     StringComparison.OrdinalIgnoreCase)
                 ||
-                e.Email.Contains(filter.Search,
+                e.Email.Contains(
+                    filter.Search,
                     StringComparison.OrdinalIgnoreCase));
         }
 
@@ -117,7 +118,8 @@ public class EmployeeService : IEmployeeService
                 e.Status == filter.Status.Value);
         }
 
-        query = ApplySorting(query,
+        query = ApplySorting(
+            query,
             filter.SortBy,
             filter.SortDirection);
 
@@ -165,10 +167,6 @@ public class EmployeeService : IEmployeeService
             request.DepartmentId,
             request.RoleId);
 
-        ValidateAge(request.DOB);
-
-        ValidateDates(request.DOB, request.DOJ);
-
         employee.FirstName = request.FirstName;
         employee.LastName = request.LastName;
         employee.Email = request.Email;
@@ -204,9 +202,7 @@ public class EmployeeService : IEmployeeService
     private async Task ValidateEmployeeAsync(
         string email,
         int departmentId,
-        int roleId,
-        DateOnly dob,
-        DateOnly doj)
+        int roleId)
     {
         bool exists = await _employeeRepository
             .UsernameExistsAsync(email);
@@ -220,10 +216,6 @@ public class EmployeeService : IEmployeeService
         await ValidateDepartmentAndRole(
             departmentId,
             roleId);
-
-        ValidateAge(dob);
-
-        ValidateDates(dob, doj);
     }
 
     private async Task ValidateDepartmentAndRole(
@@ -248,34 +240,6 @@ public class EmployeeService : IEmployeeService
         {
             throw new BusinessRuleException(
                 "Invalid role");
-        }
-    }
-
-    private static void ValidateAge(DateOnly dob)
-    {
-        int age = DateTime.Today.Year - dob.Year;
-
-        if (dob > DateOnly.FromDateTime(
-                DateTime.Today.AddYears(-age)))
-        {
-            age--;
-        }
-
-        if (age < 18)
-        {
-            throw new BusinessRuleException(
-                "Employee must be at least 18 years old");
-        }
-    }
-
-    private static void ValidateDates(
-        DateOnly dob,
-        DateOnly doj)
-    {
-        if (doj < dob)
-        {
-            throw new BusinessRuleException(
-                "DOJ cannot be before DOB");
         }
     }
 
