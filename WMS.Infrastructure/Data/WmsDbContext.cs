@@ -1,10 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using WMS.Domain.Entities;
+using WMS.Application.Interfaces;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using WMS.Domain.Enums;
 
 namespace WMS.Infrastructure.Data;
 
-public class WmsDbContext(DbContextOptions<WmsDbContext> options) : DbContext(options)
+public class WmsDbContext : DbContext
 {
+    private readonly ICurrentUserService? _currentUser;
+
+    public WmsDbContext(DbContextOptions<WmsDbContext> options, ICurrentUserService? currentUser)
+        : base(options)
+    {
+        _currentUser = currentUser;
+    }
+
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<Role> Roles => Set<Role>();
@@ -189,4 +200,128 @@ public class WmsDbContext(DbContextOptions<WmsDbContext> options) : DbContext(op
             .HasForeignKey(a => a.CreatedBy)
             .OnDelete(DeleteBehavior.Restrict);
     }
+
+    public override async Task<int> SaveChangesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var auditEntries = OnBeforeSaveChanges();
+
+        var result =
+            await base.SaveChangesAsync(cancellationToken);
+
+        if (auditEntries.Count > 0)
+        {
+            foreach (var (auditLog, entityEntry)
+                in auditEntries)
+            {
+                if (auditLog.RecordId == 0)
+                {
+                    var primaryKey =
+                        entityEntry.Properties
+                            .FirstOrDefault(p =>
+                                p.Metadata.IsPrimaryKey());
+
+                    if (primaryKey?.CurrentValue != null)
+                    {
+                        auditLog.RecordId =
+                            Convert.ToInt32(
+                                primaryKey.CurrentValue);
+                    }
+                }
+            }
+
+            AuditLogs.AddRange(
+                auditEntries.Select(a => a.Audit));
+
+            await base.SaveChangesAsync(cancellationToken);
+        }
+
+        return result;
+    }
+
+    private List<(AuditLog Audit, EntityEntry Entry)>
+        OnBeforeSaveChanges()
+    {
+        ChangeTracker.DetectChanges();
+
+        var auditLogs =
+            new List<(AuditLog Audit, EntityEntry Entry)>();
+
+        foreach (var entry in ChangeTracker.Entries())
+        {
+            if (
+                entry.Entity is AuditLog
+                ||
+                entry.Entity is UserLogin
+                ||
+                entry.State == EntityState.Detached
+                ||
+                entry.State == EntityState.Unchanged
+            )
+            {
+                continue;
+            }
+
+            if (
+                entry.State != EntityState.Added
+                &&
+                entry.State != EntityState.Modified
+                &&
+                entry.State != EntityState.Deleted
+            )
+            {
+                continue;
+            }
+
+            var auditLog = new AuditLog
+            {
+                EntityName =
+                    entry.Entity.GetType().Name,
+
+                Action = entry.State switch
+                {
+                    EntityState.Added
+                        => AuditAction.Insert,
+
+                    EntityState.Modified
+                        => AuditAction.Update,
+
+                    EntityState.Deleted
+                        => AuditAction.Delete,
+
+                    _ => AuditAction.Update
+                },
+
+                EmployeeId =
+                    _currentUser?.EmployeeId,
+
+                PerformedBy =
+                    _currentUser?.Username
+                    ?? "System",
+
+                Timestamp = DateTime.UtcNow
+            };
+
+            var primaryKey =
+                entry.Properties
+                    .FirstOrDefault(p =>
+                        p.Metadata.IsPrimaryKey());
+
+            if (
+                entry.State != EntityState.Added
+                &&
+                primaryKey?.CurrentValue != null
+            )
+            {
+                auditLog.RecordId =
+                    Convert.ToInt32(
+                        primaryKey.CurrentValue);
+            }
+
+            auditLogs.Add((auditLog, entry));
+        }
+
+        return auditLogs;
+    }
+
 }

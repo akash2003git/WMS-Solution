@@ -8,13 +8,21 @@ public class AuditLog
     [Key]
     public int AuditId { get; set; }
 
-    public string? EntityName { get; set; }
+    [Required]
+    [MaxLength(100)]
+    public string EntityName { get; set; } = string.Empty;
 
     public int RecordId { get; set; }
 
+    [Required]
     [MaxLength(20)]
     public AuditAction Action { get; set; }
 
-    public int CreatedBy { get; set; }
-    public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+    public int? EmployeeId { get; set; }
+
+    [MaxLength(100)]
+    public string PerformedBy { get; set; } = string.Empty;
+
+    public DateTime Timestamp { get; set; }
+        = DateTime.UtcNow;
 }
