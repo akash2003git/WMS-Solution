@@ -4,6 +4,7 @@ using WMS.Application.Interfaces;
 using WMS.Domain.Entities;
 using WMS.Domain.Enums;
 using WMS.Domain.Interfaces;
+using WMS.Application.Common.Models;
 
 namespace WMS.Application.Services;
 
@@ -71,14 +72,44 @@ public class AttendanceService : IAttendanceService
         return MapToDto(attendance);
     }
 
-    public async Task<List<AttendanceResponseDto>> GetMyAttendanceAsync(AttendanceFilterDto filter)
+    public async Task<PagedResponse<AttendanceResponseDto>>
+        GetMyAttendanceAsync(
+            AttendanceFilterDto filter)
     {
-        int employeeId = _currentUser.EmployeeId ?? throw new UnauthorizedException("Employee account required");
+        int employeeId =
+            _currentUser.EmployeeId
+            ?? throw new UnauthorizedException(
+                "Employee account required");
 
         var attendances =
-            await _attendanceRepository.GetAttendancesAsync(employeeId, filter.FromDate, filter.ToDate);
+            await _attendanceRepository
+                .GetAttendancesAsync(
+                    employeeId,
+                    filter.FromDate,
+                    filter.ToDate);
 
-        return attendances.Select(MapToDto).ToList();
+        IQueryable<Attendance> query =
+            attendances.AsQueryable();
+
+        query = query
+            .OrderByDescending(a => a.AttendanceDate)
+            .ThenByDescending(a => a.CheckIn);
+
+        int totalCount = query.Count();
+
+        var items = query
+            .Skip((filter.PageNumber - 1) * filter.PageSize)
+            .Take(filter.PageSize)
+            .Select(MapToDto)
+            .ToList();
+
+        return new PagedResponse<AttendanceResponseDto>
+        {
+            Items = items,
+            PageNumber = filter.PageNumber,
+            PageSize = filter.PageSize,
+            TotalCount = totalCount
+        };
     }
 
     public async Task<MonthlyAttendanceReportDto> GetMonthlyReportAsync(int? employeeId = null)
@@ -138,12 +169,39 @@ public class AttendanceService : IAttendanceService
         };
     }
 
-    public async Task<List<AttendanceResponseDto>> GetAttendanceHistoryAsync(AttendanceFilterDto filter)
+    public async Task<PagedResponse<AttendanceResponseDto>>
+        GetAttendanceHistoryAsync(
+            AttendanceFilterDto filter)
     {
-        var attendances = await _attendanceRepository
-                .GetAttendancesAsync(filter.EmployeeId, filter.FromDate, filter.ToDate);
+        var attendances =
+            await _attendanceRepository
+                .GetAttendancesAsync(
+                    filter.EmployeeId,
+                    filter.FromDate,
+                    filter.ToDate);
 
-        return attendances.Select(MapToDto).ToList();
+        IQueryable<Attendance> query =
+            attendances.AsQueryable();
+
+        query = query
+            .OrderByDescending(a => a.AttendanceDate)
+            .ThenByDescending(a => a.CheckIn);
+
+        int totalCount = query.Count();
+
+        var items = query
+            .Skip((filter.PageNumber - 1) * filter.PageSize)
+            .Take(filter.PageSize)
+            .Select(MapToDto)
+            .ToList();
+
+        return new PagedResponse<AttendanceResponseDto>
+        {
+            Items = items,
+            PageNumber = filter.PageNumber,
+            PageSize = filter.PageSize,
+            TotalCount = totalCount
+        };
     }
 
     public async Task<List<AbsenteeDto>> GetAbsenteesAsync()

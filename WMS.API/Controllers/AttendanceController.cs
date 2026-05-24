@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WMS.Application.Common.Responses;
 using WMS.Application.DTOs.Attendance;
 using WMS.Application.Interfaces;
+using WMS.Application.Common.Models;
 
 namespace WMS.API.Controllers;
 
@@ -32,13 +33,6 @@ public class AttendanceController : ControllerBase
         return Ok(ApiResponse<AttendanceResponseDto>.SuccessResponse(response, "Check-out successful"));
     }
 
-    [HttpGet("my-attendance")]
-    public async Task<IActionResult> MyAttendance([FromQuery] AttendanceFilterDto filter)
-    {
-        var response = await _attendanceService.GetMyAttendanceAsync(filter);
-        return Ok(ApiResponse<List<AttendanceResponseDto>>.SuccessResponse(response));
-    }
-
     [HttpGet("my-monthly-report")]
     public async Task<IActionResult>
         GetMyMonthlyReport()
@@ -64,7 +58,7 @@ public class AttendanceController : ControllerBase
                 .GetMyAttendanceAsync(filter);
 
         return Ok(
-            ApiResponse<List<AttendanceResponseDto>>
+            ApiResponse<PagedResponse<AttendanceResponseDto>>
             .SuccessResponse(response));
     }
 
@@ -79,7 +73,7 @@ public class AttendanceController : ControllerBase
                 .GetAttendanceHistoryAsync(filter);
 
         return Ok(
-            ApiResponse<List<AttendanceResponseDto>>
+            ApiResponse<PagedResponse<AttendanceResponseDto>>
             .SuccessResponse(response));
     }
 
