@@ -65,11 +65,22 @@ public class DashboardService
     public async Task<ManagerDashboardDto>
         GetManagerDashboardAsync()
     {
+        var activeEmployees =
+            await _dashboardRepository
+                .GetActiveEmployeesAsync();
+
+        var attendanceToday =
+            await _dashboardRepository
+                .GetAttendanceTodayAsync();
+
         return new ManagerDashboardDto
         {
             TeamAttendanceToday =
-                await _dashboardRepository
-                    .GetAttendanceTodayAsync(),
+                attendanceToday,
+
+            TeamAbsentToday =
+                activeEmployees
+                - attendanceToday,
 
             PendingLeaveRequests =
                 await _dashboardRepository

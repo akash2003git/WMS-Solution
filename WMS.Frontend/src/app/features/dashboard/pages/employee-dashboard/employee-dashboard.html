@@ -1,1 +1,622 @@
-<p>employee-dashboard works!</p>
+<div class="p-6">
+
+  <app-page-header
+    title="Employee Dashboard"
+    subtitle="Overview of your work activity">
+  </app-page-header>
+
+  @if (dashboard$ | async; as data) {
+
+    <!-- STATS -->
+
+    <div class="grid gap-4 md:grid-cols-3">
+
+      <mat-card appearance="outlined" class="rounded-2xl">
+
+        <mat-card-content class="flex items-center gap-4 p-5">
+
+          <div
+            class="
+              flex
+              h-12
+              w-12
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              bg-green-50
+            ">
+
+            <mat-icon class="text-green-600">
+              calendar_month
+            </mat-icon>
+
+          </div>
+
+          <div>
+
+            <p class="text-xs text-gray-500">
+              Present Days
+            </p>
+
+            <p class="text-3xl font-semibold">
+              {{ data.presentDaysThisMonth }}
+            </p>
+
+          </div>
+
+        </mat-card-content>
+
+      </mat-card>
+
+      <mat-card appearance="outlined" class="rounded-2xl">
+
+        <mat-card-content class="flex items-center gap-4 p-5">
+
+          <div
+            class="
+              flex
+              h-12
+              w-12
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              bg-orange-50
+            ">
+
+            <mat-icon class="text-orange-500">
+              event_busy
+            </mat-icon>
+
+          </div>
+
+          <div>
+
+            <p class="text-xs text-gray-500">
+              Leaves This Month
+            </p>
+
+            <p class="text-3xl font-semibold">
+              {{ data.leaveCountThisMonth }}
+            </p>
+
+          </div>
+
+        </mat-card-content>
+
+      </mat-card>
+
+      <mat-card appearance="outlined" class="rounded-2xl">
+
+        <mat-card-content class="flex items-center gap-4 p-5">
+
+          <div
+            class="
+              flex
+              h-12
+              w-12
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              bg-blue-50
+            ">
+
+            <mat-icon class="text-blue-600">
+              assignment
+            </mat-icon>
+
+          </div>
+
+          <div>
+
+            <p class="text-xs text-gray-500">
+              Assigned Projects
+            </p>
+
+            <p class="text-3xl font-semibold">
+              {{ data.assignedProjects.length }}
+            </p>
+
+          </div>
+
+        </mat-card-content>
+
+      </mat-card>
+
+    </div>
+
+    <!-- CHART + ANNOUNCEMENTS -->
+
+    <div class="mt-4 grid gap-4 lg:grid-cols-5">
+
+      <mat-card
+        appearance="outlined"
+        class="rounded-2xl lg:col-span-2">
+
+        <mat-card-header
+          class="
+            border-b
+            border-gray-100
+            px-5
+            pt-4
+            pb-3
+          ">
+
+          <mat-card-title
+            class="
+              text-sm
+              font-medium
+              text-gray-600
+            ">
+
+            Attendance Overview
+
+          </mat-card-title>
+
+        </mat-card-header>
+
+        <mat-card-content class="p-5">
+
+          <div class="h-72">
+
+            <canvas
+              baseChart
+              [data]="doughnutData"
+              [options]="doughnutOptions"
+              [type]="'doughnut'">
+            </canvas>
+
+          </div>
+
+        </mat-card-content>
+
+      </mat-card>
+
+      <mat-card
+        appearance="outlined"
+        class="rounded-2xl lg:col-span-3">
+
+        <mat-card-header
+          class="
+            border-b
+            border-gray-100
+            px-5
+            pt-4
+            pb-3
+          ">
+
+          <mat-card-title
+            class="
+              text-sm
+              font-medium
+              text-gray-600
+            ">
+
+            Latest Announcements
+
+          </mat-card-title>
+
+        </mat-card-header>
+
+        <mat-card-content class="p-0">
+
+          @if (data.announcements.length === 0) {
+
+            <div
+              class="
+                flex
+                flex-col
+                items-center
+                gap-2
+                py-12
+                text-center
+                text-gray-400
+              ">
+
+              <mat-icon
+                class="
+                  text-4xl!
+                  text-gray-300
+                ">
+
+                notifications_off
+
+              </mat-icon>
+
+              <p class="text-sm">
+                No announcements yet
+              </p>
+
+            </div>
+
+          } @else {
+
+            @for (
+              announcement of data.announcements;
+              track announcement.announcementId
+            ) {
+
+              <div
+                class="
+                  flex
+                  gap-3
+                  border-b
+                  border-gray-100
+                  bg-white
+                  px-5
+                  py-4
+                  transition-colors
+                  hover:bg-gray-50
+                  last:border-b-0
+                ">
+
+                <mat-icon
+                  class="
+                    mt-0.5
+                    shrink-0
+                    text-base!
+                    text-blue-400
+                  ">
+
+                  campaign
+
+                </mat-icon>
+
+                <div class="min-w-0">
+
+                  <p class="text-sm font-semibold text-gray-900">
+
+                    {{ announcement.title }}
+
+                  </p>
+
+                  <p
+                    class="
+                      mt-1
+                      whitespace-pre-line
+                      text-sm
+                      leading-6
+                      text-gray-700
+                    ">
+
+                    {{ announcement.message }}
+
+                  </p>
+
+                  <p
+                    class="
+                      mt-2
+                      text-xs
+                      font-medium
+                      text-gray-400
+                    ">
+
+                    {{ announcement.createdOn | date : 'medium' }}
+
+                  </p>
+
+                </div>
+
+              </div>
+
+            }
+
+          }
+
+        </mat-card-content>
+
+      </mat-card>
+
+    </div>
+
+    <!-- PROJECTS -->
+
+    <div class="mt-4">
+
+      <div class="mb-3 flex items-center justify-between">
+
+        <h2
+          class="
+            text-sm
+            font-medium
+            text-gray-600
+          ">
+
+          My Projects
+
+        </h2>
+
+        <span class="text-xs text-gray-400">
+
+          {{ data.assignedProjects.length }} assigned
+
+        </span>
+
+      </div>
+
+      @if (data.assignedProjects.length === 0) {
+
+        <mat-card
+          appearance="outlined"
+          class="rounded-2xl">
+
+          <mat-card-content
+            class="
+              flex
+              flex-col
+              items-center
+              gap-3
+              py-16
+              text-center
+            ">
+
+            <mat-icon
+              class="
+                text-5xl!
+                text-gray-200
+              ">
+
+              assignment
+
+            </mat-icon>
+
+            <div>
+
+              <p
+                class="
+                  font-medium
+                  text-gray-500
+                ">
+
+                No Assigned Projects
+
+              </p>
+
+              <p
+                class="
+                  mt-1
+                  text-sm
+                  text-gray-400
+                ">
+
+                You are not assigned to any projects currently.
+
+              </p>
+
+            </div>
+
+          </mat-card-content>
+
+        </mat-card>
+
+      } @else {
+
+        <div
+          class="
+            grid
+            gap-4
+            md:grid-cols-2
+            xl:grid-cols-3
+          ">
+
+          @for (
+            project of data.assignedProjects;
+            track project.projectId
+          ) {
+
+            <mat-card
+              appearance="outlined"
+              class="rounded-2xl">
+
+              <mat-card-content class="p-5">
+
+                <div
+                  class="
+                    mb-4
+                    flex
+                    items-start
+                    justify-between
+                    gap-3
+                  ">
+
+                  <div>
+
+                    <p class="font-medium">
+
+                      {{ project.projectName }}
+
+                    </p>
+
+                    <p
+                      class="
+                        mt-0.5
+                        text-xs
+                        text-gray-400
+                      ">
+
+                      {{ project.clientName || 'No Client' }}
+
+                    </p>
+
+                  </div>
+
+                  <app-status-chip
+                    [status]="project.status">
+                  </app-status-chip>
+
+                </div>
+
+                <mat-divider></mat-divider>
+
+                <div class="mt-3 space-y-2">
+
+                  <div
+                    class="
+                      flex
+                      items-center
+                      justify-between
+                      text-sm
+                    ">
+
+                    <span
+                      class="
+                        flex
+                        items-center
+                        gap-1.5
+                        text-gray-500
+                      ">
+
+                      <mat-icon class="text-base!">
+                        group
+                      </mat-icon>
+
+                      Team
+
+                    </span>
+
+                    <span class="font-medium">
+
+                      {{ project.totalEmployees }}
+
+                    </span>
+
+                  </div>
+
+                  <div
+                    class="
+                      flex
+                      items-center
+                      justify-between
+                      text-sm
+                    ">
+
+                    <span
+                      class="
+                        flex
+                        items-center
+                        gap-1.5
+                        text-gray-500
+                      ">
+
+                      <mat-icon class="text-base!">
+                        play_arrow
+                      </mat-icon>
+
+                      Start
+
+                    </span>
+
+                    <span class="font-medium">
+
+                      {{
+                        project.startDate
+                          ? (
+                              project.startDate
+                              | date : 'mediumDate'
+                            )
+                          : '—'
+                      }}
+
+                    </span>
+
+                  </div>
+
+                  <div
+                    class="
+                      flex
+                      items-center
+                      justify-between
+                      text-sm
+                    ">
+
+                    <span
+                      class="
+                        flex
+                        items-center
+                        gap-1.5
+                        text-gray-500
+                      ">
+
+                      <mat-icon class="text-base!">
+                        flag
+                      </mat-icon>
+
+                      End
+
+                    </span>
+
+                    <span class="font-medium">
+
+                      {{
+                        project.endDate
+                          ? (
+                              project.endDate
+                              | date : 'mediumDate'
+                            )
+                          : '—'
+                      }}
+
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </mat-card-content>
+
+            </mat-card>
+
+          }
+
+        </div>
+      }
+
+    </div>
+
+  } @else {
+
+    @if (errorMessage) {
+
+      <div
+        class="
+          flex
+          items-center
+          gap-3
+          rounded-2xl
+          border
+          border-red-200
+          bg-red-50
+          p-4
+          text-sm
+          text-red-700
+        ">
+
+        <mat-icon
+          class="
+            shrink-0
+            text-red-400
+          ">
+
+          error_outline
+
+        </mat-icon>
+
+        {{ errorMessage }}
+
+      </div>
+
+    } @else {
+
+      <div class="flex justify-center py-24">
+
+        <mat-spinner />
+
+      </div>
+
+    }
+
+  }
+
+</div>

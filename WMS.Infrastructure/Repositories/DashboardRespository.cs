@@ -123,4 +123,12 @@ public class DashboardRepository
             .Select(ep => ep.Project!)
             .ToListAsync();
     }
+
+    public async Task<int>
+        GetActiveEmployeesAsync()
+    {
+        return await _context.Employees
+            .CountAsync(e =>
+                e.Status == EmployeeStatus.Active);
+    }
 }

@@ -16,6 +16,8 @@ public interface IDashboardRepository
 
     Task<int> GetInactiveEmployeesAsync();
 
+    Task<int> GetActiveEmployeesAsync();
+
     Task<int> GetPendingLeaveRequestsAsync();
 
     Task<int> GetActiveProjectAllocationsAsync();
