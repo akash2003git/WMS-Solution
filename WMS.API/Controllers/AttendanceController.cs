@@ -33,6 +33,19 @@ public class AttendanceController : ControllerBase
         return Ok(ApiResponse<AttendanceResponseDto>.SuccessResponse(response, "Check-out successful"));
     }
 
+    [HttpGet("today")]
+    public async Task<IActionResult>
+        GetTodayAttendance()
+    {
+        var response =
+            await _attendanceService
+                .GetTodayAttendanceAsync();
+
+        return Ok(
+            ApiResponse<TodayAttendanceDto>
+            .SuccessResponse(response));
+    }
+
     [HttpGet("my-monthly-report")]
     public async Task<IActionResult>
         GetMyMonthlyReport()

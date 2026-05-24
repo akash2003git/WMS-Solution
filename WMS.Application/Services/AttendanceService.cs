@@ -72,6 +72,43 @@ public class AttendanceService : IAttendanceService
         return MapToDto(attendance);
     }
 
+    public async Task<TodayAttendanceDto>
+        GetTodayAttendanceAsync()
+    {
+        if (!_currentUser.EmployeeId.HasValue)
+        {
+            throw new UnauthorizedAccessException(
+                "Employee account not found");
+        }
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        var attendance =
+            await _attendanceRepository
+                .GetByEmployeeAndDateAsync(
+                    _currentUser.EmployeeId.Value,
+                    today);
+
+        if (attendance is null)
+        {
+            return new TodayAttendanceDto
+            {
+                HasCheckedIn = false,
+                HasCheckedOut = false
+            };
+        }
+
+        return new TodayAttendanceDto
+        {
+            HasCheckedIn = true,
+            HasCheckedOut = attendance.CheckOut.HasValue,
+            CheckIn = attendance.CheckIn,
+            CheckOut = attendance.CheckOut,
+            TotalHours = attendance.TotalHours,
+            WorkMode = attendance.WorkMode?.ToString()
+        };
+    }
+
     public async Task<PagedResponse<AttendanceResponseDto>>
         GetMyAttendanceAsync(
             AttendanceFilterDto filter)

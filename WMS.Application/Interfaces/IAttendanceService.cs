@@ -7,6 +7,7 @@ public interface IAttendanceService
 {
     Task<AttendanceResponseDto> CheckInAsync(AttendanceRequestDto request);
     Task<AttendanceResponseDto> CheckOutAsync();
+    Task<TodayAttendanceDto> GetTodayAttendanceAsync();
     Task<PagedResponse<AttendanceResponseDto>>
         GetMyAttendanceAsync(AttendanceFilterDto filter);
     Task<MonthlyAttendanceReportDto>
