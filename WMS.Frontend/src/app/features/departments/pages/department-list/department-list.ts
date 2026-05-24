@@ -40,21 +40,22 @@ export class DepartmentList {
 
   departments$: Observable<Department[]> = this.refresh$.pipe(
     switchMap(() => {
-      this.isLoading = true;
+      queueMicrotask(() => {
+        this.isLoading = true;
+      });
       return this.departmentService
         .getDepartments()
         .pipe(
-          map(response =>
-            response.data ?? []
-          ),
+          map(response => response.data ?? []),
           catchError(error => {
-            const message = error?.error?.Message
-              || 'Failed to load departments';
+            const message = error?.error?.Message || 'Failed to load departments';
             this.toastr.error(message);
             return of([]);
           }),
           finalize(() => {
-            this.isLoading = false;
+            queueMicrotask(() => {
+              this.isLoading = false;
+            });
           })
         );
     })

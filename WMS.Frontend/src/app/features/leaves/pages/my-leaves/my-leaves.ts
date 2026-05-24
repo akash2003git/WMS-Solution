@@ -50,19 +50,26 @@ export class MyLeaves {
 
   leaves$ = this.refresh$.pipe(
     switchMap(() => {
-      this.loading = true;
-      this.errorMessage = '';
+      queueMicrotask(() => {
+        this.loading = true;
+        this.errorMessage = '';
+      });
+
       return this.leaveService
         .getMyLeaves()
         .pipe(
           map(response => response.data),
           catchError(error => {
             console.error(error);
-            this.errorMessage = 'Failed to load leaves';
+            queueMicrotask(() => {
+              this.errorMessage = 'Failed to load leaves';
+            });
             return of([]);
           }),
           finalize(() => {
-            this.loading = false;
+            queueMicrotask(() => {
+              this.loading = false;
+            });
           })
         );
     })

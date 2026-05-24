@@ -54,23 +54,27 @@ export class ManageLeaves {
 
   leaves$ = this.refresh$.pipe(
     switchMap(() => {
-      this.loading = true;
-      this.errorMessage = '';
+      queueMicrotask(() => {
+        this.loading = true;
+        this.errorMessage = '';
+      });
       const filter = this.buildFilters();
       const request$ = filter.status === 'Pending'
         ? this.leaveService.getPendingLeaves()
         : this.leaveService.getLeaves(filter);
       return request$.pipe(
-        map(response =>
-          response.data
-        ),
+        map(response => response.data),
         catchError(error => {
           console.error(error);
-          this.errorMessage = 'Failed to load leaves';
+          queueMicrotask(() => {
+            this.errorMessage = 'Failed to load leaves';
+          });
           return of([]);
         }),
         finalize(() => {
-          this.loading = false;
+          queueMicrotask(() => {
+            this.loading = false;
+          });
         })
       );
     })

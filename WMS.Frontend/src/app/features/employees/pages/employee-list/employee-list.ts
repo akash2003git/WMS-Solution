@@ -93,7 +93,9 @@ export class EmployeeList {
   employees$ = this.refresh$
     .pipe(
       switchMap(() => {
-        this.loading = true;
+        queueMicrotask(() => {
+          this.loading = true;
+        });
         return this.employeeService
           .getEmployees(this.filterState)
           .pipe(
@@ -109,7 +111,11 @@ export class EmployeeList {
                 totalPages: 0
               });
             }),
-            finalize(() => { this.loading = false; })
+            finalize(() => {
+              queueMicrotask(() => {
+                this.loading = false;
+              });
+            })
           );
       })
     );
