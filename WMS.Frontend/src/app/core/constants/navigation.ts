@@ -38,10 +38,16 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     roles: ['Admin', 'Manager', 'Employee']
   },
   {
-    label: 'Leaves',
+    label: 'My Leaves',
+    icon: 'event_note',
+    route: '/my-leaves',
+    roles: ['Employee']
+  },
+  {
+    label: 'Manage Leaves',
     icon: 'event_busy',
-    route: '/leaves',
-    roles: ['Admin', 'Manager', 'Employee']
+    route: '/manage-leaves',
+    roles: ['Admin', 'Manager']
   },
   {
     label: 'Projects',

@@ -24,6 +24,7 @@ import { EmployeeFilter } from '../../models/employee-filter.model';
 import { EmployeeFormDialog } from '../../components/employee-form-dialog/employee-form-dialog';
 import { EmployeeCredentialsDialog } from '../../components/employee-credentials-dialog/employee-credentials-dialog';
 import { EMPLOYEE_STATUS_OPTIONS } from '../../constants/employee.constants';
+import { StatusChip } from '../../../../shared/components/status-chip/status-chip';
 
 @Component({
   selector: 'app-employee-list',
@@ -32,6 +33,7 @@ import { EMPLOYEE_STATUS_OPTIONS } from '../../constants/employee.constants';
     ReactiveFormsModule,
     PageHeader,
     Pagination,
+    StatusChip,
     ...MATERIAL_MODULES
   ],
   templateUrl: './employee-list.html'

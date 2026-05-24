@@ -7,7 +7,6 @@ import { EmployeeDashboard } from './features/dashboard/pages/employee-dashboard
 import { DepartmentList } from './features/departments/pages/department-list/department-list';
 import { EmployeeList } from './features/employees/pages/employee-list/employee-list';
 import { AttendanceList } from './features/attendance/pages/attendance-list/attendance-list';
-import { LeaveList } from './features/leaves/pages/leave-list/leave-list';
 import { ProjectList } from './features/projects/pages/project-list/project-list';
 import { ClientList } from './features/clients/pages/client-list/client-list';
 import { AnnouncementList } from './features/announcements/pages/announcement-list/announcement-list';
@@ -17,6 +16,8 @@ import { Unauthorized } from './shared/components/unauthorized/unauthorized';
 import { authGuard } from './core/guards/auth-guard';
 import { roleGuard } from './core/guards/role-guard';
 import { loginRedirectGuard } from './core/guards/login-redirect-guard';
+import { MyLeaves } from './features/leaves/pages/my-leaves/my-leaves';
+import { ManageLeaves } from './features/leaves/pages/manage-leaves/manage-leaves';
 
 export const appRoutes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -71,11 +72,19 @@ export const appRoutes: Routes = [
         }
       },
       {
-        path: 'leaves',
-        component: LeaveList,
+        path: 'my-leaves',
+        component: MyLeaves,
         canActivate: [roleGuard],
         data: {
-          roles: ['Admin', 'Manager', 'Employee']
+          roles: ['Employee']
+        }
+      },
+      {
+        path: 'manage-leaves',
+        component: ManageLeaves,
+        canActivate: [roleGuard],
+        data: {
+          roles: ['Admin', 'Manager']
         }
       },
       {

@@ -17,6 +17,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSortModule } from '@angular/material/sort';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 export const MATERIAL_MODULES = [
   MatButtonModule,
@@ -37,5 +39,7 @@ export const MATERIAL_MODULES = [
   MatSelectModule,
   MatTooltipModule,
   MatSortModule,
-  MatSnackBarModule
+  MatSnackBarModule,
+  MatDatepickerModule,
+  MatNativeDateModule
 ];

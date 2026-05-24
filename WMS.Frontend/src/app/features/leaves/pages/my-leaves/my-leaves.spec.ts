@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LeaveList } from './leave-list';
+import { MyLeaves } from './my-leaves';
 
-describe('LeaveList', () => {
-  let component: LeaveList;
-  let fixture: ComponentFixture<LeaveList>;
+describe('MyLeaves', () => {
+  let component: MyLeaves;
+  let fixture: ComponentFixture<MyLeaves>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LeaveList],
+      imports: [MyLeaves],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(LeaveList);
+    fixture = TestBed.createComponent(MyLeaves);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
