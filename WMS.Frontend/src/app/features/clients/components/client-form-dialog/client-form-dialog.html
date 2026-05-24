@@ -1,0 +1,130 @@
+<h2 mat-dialog-title>
+  {{
+    isEditMode
+      ? 'Edit Client'
+      : 'Create Client'
+  }}
+</h2>
+
+<mat-dialog-content>
+
+  <form
+    [formGroup]="form"
+    class="mt-4 flex flex-col gap-4">
+
+    <mat-form-field
+      appearance="outline">
+
+      <mat-label>
+        Client Name
+      </mat-label>
+
+      <input
+        matInput
+        formControlName="clientName">
+
+      @if (
+        form.controls.clientName.touched
+        &&
+        form.controls.clientName.invalid
+      ) {
+
+        <mat-error>
+          Client name is required
+        </mat-error>
+
+      }
+
+    </mat-form-field>
+
+    <mat-form-field
+      appearance="outline">
+
+      <mat-label>
+        Address
+      </mat-label>
+
+      <textarea
+        matInput
+        rows="3"
+        formControlName="clientAddress">
+      </textarea>
+
+    </mat-form-field>
+
+    <mat-form-field
+      appearance="outline">
+
+      <mat-label>
+        Phone Number
+      </mat-label>
+
+      <input
+        matInput
+        formControlName="clientPhoneNumber">
+
+    </mat-form-field>
+
+    <mat-form-field
+      appearance="outline">
+
+      <mat-label>
+        Location
+      </mat-label>
+
+      <input
+        matInput
+        formControlName="clientLocation">
+
+    </mat-form-field>
+
+    @if (isEditMode) {
+
+      <mat-slide-toggle
+        formControlName="status">
+
+        Active Client
+
+      </mat-slide-toggle>
+
+    }
+
+  </form>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+  <button
+    mat-button
+    mat-dialog-close>
+
+    Cancel
+
+  </button>
+
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="loading"
+    (click)="submit()">
+
+    @if (loading) {
+
+      <mat-spinner
+        diameter="20">
+      </mat-spinner>
+
+    } @else {
+
+      {{
+        isEditMode
+          ? 'Update'
+          : 'Create'
+      }}
+
+    }
+
+  </button>
+
+</mat-dialog-actions>
