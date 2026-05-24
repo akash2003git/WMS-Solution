@@ -1,0 +1,103 @@
+<h2 mat-dialog-title>
+  {{
+    isEditMode
+      ? 'Edit Announcement'
+      : 'Create Announcement'
+  }}
+</h2>
+
+<mat-dialog-content>
+
+  <form
+    [formGroup]="form"
+    class="mt-4 flex flex-col gap-4">
+
+    <mat-form-field
+      appearance="outline">
+
+      <mat-label>
+        Title
+      </mat-label>
+
+      <input
+        matInput
+        formControlName="title">
+
+      @if (
+        form.controls.title.touched
+        &&
+        form.controls.title.invalid
+      ) {
+
+        <mat-error>
+          Title is required
+        </mat-error>
+
+      }
+
+    </mat-form-field>
+
+    <mat-form-field
+      appearance="outline">
+
+      <mat-label>
+        Message
+      </mat-label>
+
+      <textarea
+        matInput
+        rows="6"
+        formControlName="message">
+      </textarea>
+
+      @if (
+        form.controls.message.touched
+        &&
+        form.controls.message.invalid
+      ) {
+
+        <mat-error>
+          Message is required
+        </mat-error>
+
+      }
+
+    </mat-form-field>
+
+  </form>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+  <button
+    mat-button
+    mat-dialog-close>
+
+    Cancel
+
+  </button>
+
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="loading"
+    (click)="submit()">
+
+    @if (loading) {
+
+      <mat-spinner diameter="20" />
+
+    } @else {
+
+      {{
+        isEditMode
+          ? 'Update'
+          : 'Create'
+      }}
+
+    }
+
+  </button>
+
+</mat-dialog-actions>
