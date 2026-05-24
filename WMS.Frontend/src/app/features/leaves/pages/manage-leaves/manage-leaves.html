@@ -1,1 +1,170 @@
-<p>manage-leaves works!</p>
+<app-page-header title="Manage Leaves" subtitle="Approve and manage employee leave requests" />
+
+<form [formGroup]="filterForm" class="mb-5 flex flex-wrap gap-4">
+  <mat-form-field appearance="outline">
+    <mat-label> Status </mat-label>
+
+    <mat-select formControlName="status">
+      <mat-option value="Pending">
+        Pending
+      </mat-option>
+
+      <mat-option value="Approved">
+        Approved
+      </mat-option>
+
+      <mat-option value="Rejected">
+        Rejected
+      </mat-option>
+
+      <mat-option value="">
+        All
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label> From Date </mat-label>
+    <input matInput [matDatepicker]="fromPicker" formControlName="fromDate">
+    <mat-datepicker-toggle matIconSuffix [for]="fromPicker" />
+    <mat-datepicker #fromPicker />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label> To Date </mat-label>
+    <input matInput [matDatepicker]="toPicker" formControlName="toDate">
+    <mat-datepicker-toggle matIconSuffix [for]="toPicker" />
+    <mat-datepicker #toPicker />
+  </mat-form-field>
+
+  <div class="flex items-center">
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      (click)="applyFilters()">
+      Apply Filters
+    </button>
+  </div>
+</form>
+
+@if (loading) {
+  <div class="flex justify-center py-20">
+    <mat-spinner />
+  </div>
+}
+
+@if (errorMessage) {
+  <div class="
+      rounded-xl
+      border
+      border-red-200
+      bg-red-50
+      p-4
+      text-red-600
+    ">
+    {{ errorMessage }}
+  </div>
+}
+
+@if (leaves$ | async; as leaves) {
+  <div class="
+      overflow-hidden
+      rounded-2xl
+      border
+      border-gray-200
+      bg-white
+      shadow-sm
+    ">
+
+    @if (leaves.length > 0) {
+      <table mat-table [dataSource]="leaves">
+        <ng-container matColumnDef="employee">
+          <th mat-header-cell *matHeaderCellDef>
+            Employee
+          </th>
+
+          <td mat-cell *matCellDef="let leave">
+            {{ leave.employeeName }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="leaveType">
+          <th mat-header-cell *matHeaderCellDef>
+            Leave Type
+          </th>
+          <td mat-cell *matCellDef="let leave">
+            {{ leave.leaveType }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="fromDate">
+          <th mat-header-cell *matHeaderCellDef>
+            From
+          </th>
+          <td mat-cell *matCellDef="let leave">
+            {{ leave.fromDate | date }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="toDate">
+          <th mat-header-cell *matHeaderCellDef>
+            To
+          </th>
+
+          <td mat-cell *matCellDef="let leave">
+            {{ leave.toDate | date }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="days">
+          <th mat-header-cell *matHeaderCellDef>
+            Days
+          </th>
+
+          <td mat-cell *matCellDef="let leave">
+            {{ leave.totalDays }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>
+            Status
+          </th>
+
+          <td mat-cell *matCellDef="let leave">
+            <app-status-chip [status]="leave.status" />
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>
+            Actions
+          </th>
+
+          <td mat-cell *matCellDef="let leave">
+            @if ( leave.status === 'Pending') {
+              <div class="flex gap-2">
+                <button mat-flat-button color="primary" (click)="approveLeave(leave.leaveId)">
+                  Approve
+                </button>
+
+                <button mat-flat-button color="warn" (click)="rejectLeave(leave.leaveId)">
+                  Reject
+                </button>
+              </div>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef=" displayedColumns "> </tr>
+        <tr mat-row *matRowDef=" let row; columns: displayedColumns "> </tr>
+      </table>
+    } @else {
+
+      <div class="py-20 text-center text-gray-500">
+        No leave requests found
+      </div>
+    }
+  </div>
+}

@@ -1,36 +1,18 @@
-<app-page-header
-  title="My Leaves"
-  subtitle="Apply and track your leave requests">
-
-  <button
-    mat-raised-button
-    color="primary"
-    (click)="openApplyDialog()">
-
-    <mat-icon>
-      add
-    </mat-icon>
-
+<app-page-header title="My Leaves" subtitle="Apply and track your leave requests">
+  <button mat-raised-button color="primary" (click)="openApplyDialog()">
+    <mat-icon> add </mat-icon>
     Apply Leave
-
   </button>
-
 </app-page-header>
 
 @if (loading) {
-
   <div class="flex justify-center py-20">
-
     <mat-spinner />
-
   </div>
-
 }
 
 @if (errorMessage) {
-
-  <div
-    class="
+  <div class="
       rounded-xl
       border
       border-red-200
@@ -38,17 +20,12 @@
       p-4
       text-red-600
     ">
-
     {{ errorMessage }}
-
   </div>
-
 }
 
 @if (leaves$ | async; as leaves) {
-
-  <div
-    class="
+  <div class="
       overflow-hidden
       rounded-2xl
       border
@@ -58,195 +35,84 @@
     ">
 
     @if (leaves.length > 0) {
-
-      <table
-        mat-table
-        [dataSource]="leaves">
-
+      <table mat-table [dataSource]="leaves">
         <ng-container matColumnDef="leaveType">
-
-          <th
-            mat-header-cell
-            *matHeaderCellDef>
-
+          <th mat-header-cell *matHeaderCellDef>
             Leave Type
-
           </th>
 
-          <td
-            mat-cell
-            *matCellDef="let leave">
-
+          <td mat-cell *matCellDef="let leave">
             {{ leave.leaveType }}
-
           </td>
-
         </ng-container>
 
         <ng-container matColumnDef="fromDate">
-
-          <th
-            mat-header-cell
-            *matHeaderCellDef>
-
+          <th mat-header-cell *matHeaderCellDef>
             From
-
           </th>
-
-          <td
-            mat-cell
-            *matCellDef="let leave">
-
-            {{
-              leave.fromDate
-              | date
-            }}
-
+          <td mat-cell *matCellDef="let leave">
+            {{ leave.fromDate | date }}
           </td>
-
         </ng-container>
 
         <ng-container matColumnDef="toDate">
-
-          <th
-            mat-header-cell
-            *matHeaderCellDef>
-
+          <th mat-header-cell *matHeaderCellDef>
             To
-
           </th>
 
-          <td
-            mat-cell
-            *matCellDef="let leave">
-
-            {{
-              leave.toDate
-              | date
-            }}
-
+          <td mat-cell *matCellDef="let leave">
+            {{ leave.toDate | date }}
           </td>
-
         </ng-container>
 
         <ng-container matColumnDef="totalDays">
-
-          <th
-            mat-header-cell
-            *matHeaderCellDef>
-
+          <th mat-header-cell *matHeaderCellDef>
             Days
-
           </th>
 
-          <td
-            mat-cell
-            *matCellDef="let leave">
-
+          <td mat-cell *matCellDef="let leave">
             {{ leave.totalDays }}
-
           </td>
-
         </ng-container>
 
         <ng-container matColumnDef="status">
-
-          <th
-            mat-header-cell
-            *matHeaderCellDef>
-
+          <th mat-header-cell *matHeaderCellDef>
             Status
-
           </th>
 
-          <td
-            mat-cell
-            *matCellDef="let leave">
-
-            <app-status-chip
-              [status]="leave.status" />
-
+          <td mat-cell *matCellDef="let leave">
+            <app-status-chip [status]="leave.status" />
           </td>
-
         </ng-container>
 
         <ng-container matColumnDef="appliedOn">
-
-          <th
-            mat-header-cell
-            *matHeaderCellDef>
-
+          <th mat-header-cell *matHeaderCellDef>
             Applied On
-
           </th>
 
-          <td
-            mat-cell
-            *matCellDef="let leave">
-
-            {{
-              leave.appliedOn
-              | date : 'mediumDate'
-            }}
-
+          <td mat-cell *matCellDef="let leave">
+            {{ leave.appliedOn | date : 'mediumDate' }}
           </td>
-
         </ng-container>
 
         <ng-container matColumnDef="actions">
-
-          <th
-            mat-header-cell
-            *matHeaderCellDef>
-
+          <th mat-header-cell *matHeaderCellDef>
             Actions
-
           </th>
-
-          <td
-            mat-cell
-            *matCellDef="let leave">
-
-            @if (
-              canCancel(leave)
-            ) {
-
-              <button
-                mat-button
-                color="warn"
-                (click)="cancelLeave(leave)">
-
+          <td mat-cell *matCellDef="let leave">
+            @if ( canCancel(leave)) {
+              <button mat-button color="warn" (click)="cancelLeave(leave)">
                 Cancel
-
               </button>
-
             }
-
           </td>
-
         </ng-container>
 
-        <tr
-          mat-header-row
-          *matHeaderRowDef="
-            displayedColumns
-          ">
-        </tr>
-
-        <tr
-          mat-row
-          *matRowDef="
-            let row;
-            columns: displayedColumns
-          ">
-        </tr>
-
+        <tr mat-header-row *matHeaderRowDef=" displayedColumns "> </tr>
+        <tr mat-row *matRowDef=" let row; columns: displayedColumns "> </tr>
       </table>
-
     } @else {
-
-      <div
-        class="
+      <div class="
           flex
           flex-col
           items-center
@@ -255,39 +121,15 @@
           py-20
           text-center
         ">
-
-        <mat-icon
-          class="
-            h-14!
-            w-14!
-            text-6xl!
-            text-gray-300
-          ">
-
+        <mat-icon class=" h-14! w-14! text-6xl! text-gray-300 ">
           event_busy
-
         </mat-icon>
 
         <div>
-
-          <p class="text-lg font-medium">
-
-            No leave requests
-
-          </p>
-
-          <p class="text-sm text-gray-500">
-
-            Apply your first leave request
-
-          </p>
-
+          <p class="text-lg font-medium"> No leave requests </p>
+          <p class="text-sm text-gray-500"> Apply your first leave request </p>
         </div>
-
       </div>
-
     }
-
   </div>
-
 }
