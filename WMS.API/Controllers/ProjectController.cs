@@ -8,7 +8,7 @@ namespace WMS.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin,Manager")]
+[Authorize]
 public class ProjectsController : ControllerBase
 {
     private readonly IProjectService _projectService;
@@ -19,7 +19,21 @@ public class ProjectsController : ControllerBase
         _projectService = projectService;
     }
 
+    [HttpGet("my-projects")]
+    public async Task<IActionResult>
+        GetMyProjects()
+    {
+        var response =
+            await _projectService
+                .GetMyProjectsAsync();
+
+        return Ok(
+            ApiResponse<List<ProjectResponseDto>>
+            .SuccessResponse(response));
+    }
+
     [HttpPost]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult>
         CreateProject(
             CreateProjectRequestDto request)
@@ -36,6 +50,7 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult>
         UpdateProject(
             int id,
@@ -54,6 +69,7 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult>
         GetProjects()
     {
@@ -67,6 +83,7 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult>
         GetProjectById(int id)
     {
@@ -80,6 +97,7 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpPost("{id}/assign-employee")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult>
         AssignEmployee(
             int id,
@@ -98,6 +116,7 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpDelete("{id}/remove-employee/{employeeId}")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult>
         RemoveEmployee(
             int id,
@@ -116,6 +135,7 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpGet("{id}/allocations")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult>
         GetProjectAllocations(int id)
     {

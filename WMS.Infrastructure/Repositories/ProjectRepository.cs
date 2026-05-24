@@ -39,6 +39,22 @@ public class ProjectRepository : IProjectRepository
                 p.ProjectId == projectId);
     }
 
+    public async Task<List<Project>>
+        GetEmployeeProjectsAsync(int employeeId)
+    {
+        return await _context.EmployeeProjects
+            .Include(ep => ep.Project)
+                .ThenInclude(p => p!.Client)
+            .Include(ep => ep.Project)
+                .ThenInclude(p => p!.EmployeeAllocations)
+            .Where(ep =>
+                ep.EmpId == employeeId
+                &&
+                ep.Status)
+            .Select(ep => ep.Project!)
+            .ToListAsync();
+    }
+
     public async Task<List<Project>> GetProjectsAsync()
     {
         return await _context.Projects

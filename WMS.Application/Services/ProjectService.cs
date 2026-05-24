@@ -101,6 +101,25 @@ public class ProjectService : IProjectService
             .ToList();
     }
 
+    public async Task<List<ProjectResponseDto>>
+        GetMyProjectsAsync()
+    {
+        if (!_currentUser.EmployeeId.HasValue)
+        {
+            throw new BusinessRuleException(
+                "Employee profile not found");
+        }
+
+        var projects =
+            await _projectRepository
+                .GetEmployeeProjectsAsync(
+                    _currentUser.EmployeeId.Value);
+
+        return projects
+            .Select(MapToDto)
+            .ToList();
+    }
+
     public async Task<ProjectResponseDto>
         GetProjectByIdAsync(
             int projectId)

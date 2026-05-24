@@ -8,6 +8,8 @@ public interface IProjectRepository
 
     Task UpdateProjectAsync(Project project);
 
+    Task<List<Project>> GetEmployeeProjectsAsync(int employeeId);
+
     Task<Project?> GetProjectByIdAsync(int projectId);
 
     Task<List<Project>> GetProjectsAsync();

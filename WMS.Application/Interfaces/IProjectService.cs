@@ -4,6 +4,8 @@ namespace WMS.Application.Interfaces;
 
 public interface IProjectService
 {
+    Task<List<ProjectResponseDto>> GetMyProjectsAsync();
+
     Task<ProjectResponseDto> CreateProjectAsync(CreateProjectRequestDto request);
 
     Task UpdateProjectAsync(int projectId, UpdateProjectRequestDto request);
