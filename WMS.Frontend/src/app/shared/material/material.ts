@@ -12,6 +12,11 @@ import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSortModule } from '@angular/material/sort';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 export const MATERIAL_MODULES = [
   MatButtonModule,
@@ -27,5 +32,10 @@ export const MATERIAL_MODULES = [
   MatTableModule,
   MatChipsModule,
   MatMenuModule,
-  MatDividerModule
+  MatDividerModule,
+  MatPaginatorModule,
+  MatSelectModule,
+  MatTooltipModule,
+  MatSortModule,
+  MatSnackBarModule
 ];

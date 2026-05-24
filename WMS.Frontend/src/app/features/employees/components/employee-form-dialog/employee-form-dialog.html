@@ -1,0 +1,89 @@
+<h2 mat-dialog-title>
+  {{ isEditMode ? 'Edit Employee' : 'Add Employee' }}
+</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-dialog-content>
+    <div class="grid gap-4 md:grid-cols-2">
+      <mat-form-field appearance="outline">
+        <mat-label> First Name </mat-label>
+        <input matInput formControlName="firstName">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label> Last Name </mat-label>
+        <input matInput formControlName="lastName">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label> Email </mat-label>
+        <input matInput formControlName="email">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label> Phone Number </mat-label>
+        <input matInput formControlName="phoneNumber">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label> Gender </mat-label>
+        <mat-select formControlName="gender">
+          @for ( gender of genders; track gender.value) {
+            <mat-option [value]="gender.value">
+              {{ gender.label }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label> Date of Birth </mat-label>
+        <input matInput type="date" formControlName="dob">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label> Date of Joining </mat-label>
+        <input matInput type="date" formControlName="doj">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label> Department </mat-label>
+        <mat-select formControlName="departmentId">
+          @if ( departments$ | async; as departments) {
+            @for ( department of departments; track department.departmentId) {
+              <mat-option [value]="department.departmentId">
+                {{ department.departmentName }}
+              </mat-option>
+            }
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label> Role </mat-label>
+        <mat-select formControlName="roleId">
+          @if ( roles$ | async; as roles) {
+            @for ( role of roles; track role.roleId) {
+              <mat-option [value]="role.roleId">
+                {{ role.roleName }}
+              </mat-option>
+            }
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>
+      Cancel
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="isLoading">
+      {{ isLoading ? 'Saving...' : 'Save' }}
+    </button>
+  </mat-dialog-actions>
+</form>
