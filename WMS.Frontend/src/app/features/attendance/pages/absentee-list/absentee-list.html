@@ -1,0 +1,70 @@
+<app-page-header
+  title="Today's Absentees"
+  subtitle="Employees who have not checked in today" />
+
+@if (absentees$ | async; as absentees) {
+
+  <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+
+    <table
+      mat-table
+      [dataSource]="absentees">
+
+      <ng-container matColumnDef="employeeName">
+
+        <th mat-header-cell *matHeaderCellDef>
+          Employee
+        </th>
+
+        <td mat-cell *matCellDef="let employee">
+
+          {{ employee.employeeName }}
+
+        </td>
+
+      </ng-container>
+
+      <ng-container matColumnDef="department">
+
+        <th mat-header-cell *matHeaderCellDef>
+          Department
+        </th>
+
+        <td mat-cell *matCellDef="let employee">
+
+          {{ employee.department }}
+
+        </td>
+
+      </ng-container>
+
+      <ng-container matColumnDef="role">
+
+        <th mat-header-cell *matHeaderCellDef>
+          Role
+        </th>
+
+        <td mat-cell *matCellDef="let employee">
+
+          {{ employee.role }}
+
+        </td>
+
+      </ng-container>
+
+      <tr
+        mat-header-row
+        *matHeaderRowDef="displayedColumns" >
+
+      <tr
+        mat-row
+        *matRowDef="
+          let row;
+          columns: displayedColumns
+        " >
+
+    </table>
+
+  </div>
+
+}

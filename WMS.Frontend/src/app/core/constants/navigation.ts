@@ -44,6 +44,12 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     roles: ['Admin', 'Manager']
   },
   {
+    label: 'Absentees',
+    icon: 'person_off',
+    route: '/attendance/absentees',
+    roles: ['Admin', 'Manager']
+  },
+  {
     label: 'My Leaves',
     icon: 'event_note',
     route: '/my-leaves',

@@ -8,6 +8,7 @@ import { DepartmentList } from './features/departments/pages/department-list/dep
 import { EmployeeList } from './features/employees/pages/employee-list/employee-list';
 import { AttendanceList } from './features/attendance/pages/attendance-list/attendance-list';
 import { MyAttendance } from './features/attendance/pages/my-attendance/my-attendance';
+import { AbsenteeList } from './features/attendance/pages/absentee-list/absentee-list';
 import { ProjectList } from './features/projects/pages/project-list/project-list';
 import { ClientList } from './features/clients/pages/client-list/client-list';
 import { AnnouncementList } from './features/announcements/pages/announcement-list/announcement-list';
@@ -75,6 +76,14 @@ export const appRoutes: Routes = [
       {
         path: 'manage-attendance',
         component: AttendanceList,
+        canActivate: [roleGuard],
+        data: {
+          roles: ['Admin', 'Manager']
+        }
+      },
+      {
+        path: 'attendance/absentees',
+        component: AbsenteeList,
         canActivate: [roleGuard],
         data: {
           roles: ['Admin', 'Manager']
