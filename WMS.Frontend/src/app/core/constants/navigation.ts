@@ -32,10 +32,16 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     roles: ['Admin', 'Manager']
   },
   {
-    label: 'Attendance',
+    label: 'My Attendance',
+    icon: 'schedule',
+    route: '/my-attendance',
+    roles: ['Employee']
+  },
+  {
+    label: 'Manage Attendance',
     icon: 'calendar_month',
-    route: '/attendance',
-    roles: ['Admin', 'Manager', 'Employee']
+    route: '/manage-attendance',
+    roles: ['Admin', 'Manager']
   },
   {
     label: 'My Leaves',

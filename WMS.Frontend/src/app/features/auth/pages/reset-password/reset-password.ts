@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -9,11 +9,7 @@ import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-reset-password',
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    ...MATERIAL_MODULES
-  ],
+  imports: [CommonModule, ReactiveFormsModule, ...MATERIAL_MODULES],
   templateUrl: './reset-password.html',
   styleUrl: './reset-password.css'
 })
@@ -22,7 +18,6 @@ export class ResetPassword implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly toastr = inject(ToastrService);
   private readonly router = inject(Router);
-  private readonly cdr = inject(ChangeDetectorRef);
 
   isLoading = false;
   hideCurrentPassword = true;
@@ -34,6 +29,12 @@ export class ResetPassword implements OnInit {
     newPassword: ['', [Validators.required, Validators.minLength(8)]],
     confirmPassword: ['', [Validators.required]]
   });
+
+  ngOnInit(): void {
+    if (!sessionStorage.getItem('reset_username')) {
+      this.router.navigate(['/login']);
+    }
+  }
 
   onSubmit(): void {
     if (this.resetPasswordForm.invalid) {
@@ -49,7 +50,6 @@ export class ResetPassword implements OnInit {
     }
 
     const username = sessionStorage.getItem('reset_username');
-
     if (!username) {
       this.router.navigate(['/login']);
       return;
@@ -63,12 +63,7 @@ export class ResetPassword implements OnInit {
         currentPassword: form.currentPassword ?? '',
         newPassword: form.newPassword ?? ''
       })
-      .pipe(
-        finalize(() => {
-          this.isLoading = false;
-          this.cdr.detectChanges();
-        })
-      )
+      .pipe(finalize(() => { this.isLoading = false; }))
       .subscribe({
         next: (response) => {
           this.toastr.success(response.message);
@@ -76,7 +71,6 @@ export class ResetPassword implements OnInit {
           this.authService.logout();
           this.router.navigate(['/login']);
         },
-
         error: (error) => {
           const message = error?.error?.Message
             || error?.error?.Errors?.[0]
@@ -84,11 +78,5 @@ export class ResetPassword implements OnInit {
           this.toastr.error(message);
         }
       });
-  }
-
-  ngOnInit(): void {
-    if (!sessionStorage.getItem('reset_username')) {
-      this.router.navigate(['/login']);
-    }
   }
 }
