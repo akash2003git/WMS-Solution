@@ -1,33 +1,51 @@
-<mat-toolbar color="primary">
+<mat-sidenav-container class="h-screen">
+  <mat-sidenav
+    #sidenav
+    [mode]=" (isMobile$ | async) ? 'over' : 'side' "
+    [opened]=" !(isMobile$ | async) "
+    class="w-65 rounded-none">
+    <div class="p-6 text-2xl font-bold">
+      WMS
+    </div>
 
-  <span class="font-bold">
-    WMS Portal
-  </span>
+    <mat-nav-list class="px-2">
+      @for ( item of navigationItems; track item.route) {
+        <a
+          mat-list-item
+          [routerLink]="item.route"
+          routerLinkActive="active-link"
+          (click)=" closeSidenavOnMobile() ">
+          <mat-icon matListItemIcon>
+            {{ item.icon }}
+          </mat-icon>
+          <span>
+            {{ item.label }}
+          </span>
+        </a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
 
-  <span class="flex-1"></span>
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="sticky top-0 z-50">
+      @if (isMobile$ | async) {
+        <button mat-icon-button (click)=" sidenav.toggle() ">
+          <mat-icon> menu </mat-icon>
+        </button>
+      }
+      <span> WMS Portal </span>
+      <span class="flex-1"></span>
+      <span class="mr-4">
+        {{ currentUser?.username }}
+        ({{ currentUser?.role }})
+      </span>
+      <button mat-raised-button color="warn" (click)="logout()">
+        Logout
+      </button>
+    </mat-toolbar>
 
-  @if (currentUser) {
-
-    <span class="mr-4">
-      {{ currentUser.username }}
-      ({{ currentUser.role }})
-    </span>
-
-  }
-
-  <button
-    mat-raised-button
-    color="warn"
-    (click)="logout()">
-
-    Logout
-
-  </button>
-
-</mat-toolbar>
-
-<div class="p-6">
-
-  <router-outlet />
-
-</div>
+    <div class="p-6">
+      <router-outlet />
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
