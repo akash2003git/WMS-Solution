@@ -50,7 +50,9 @@ export const appRoutes: Routes = [
         path: 'departments',
         component: DepartmentList,
         canActivate: [roleGuard],
-        data: { roles: ['Admin'] }
+        data: {
+          roles: ['Admin', 'Manager']
+        }
       },
       {
         path: 'employees',

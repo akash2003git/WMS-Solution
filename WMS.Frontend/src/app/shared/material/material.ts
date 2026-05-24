@@ -7,6 +7,11 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatTableModule } from '@angular/material/table';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
 
 export const MATERIAL_MODULES = [
   MatButtonModule,
@@ -17,5 +22,10 @@ export const MATERIAL_MODULES = [
   MatListModule,
   MatProgressSpinnerModule,
   MatSidenavModule,
-  MatToolbarModule
+  MatToolbarModule,
+  MatDialogModule,
+  MatTableModule,
+  MatChipsModule,
+  MatMenuModule,
+  MatDividerModule
 ];

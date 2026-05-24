@@ -23,7 +23,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     label: 'Departments',
     icon: 'apartment',
     route: '/departments',
-    roles: ['Admin']
+    roles: ['Admin', 'Manager']
   },
   {
     label: 'Employees',
