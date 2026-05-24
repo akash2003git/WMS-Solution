@@ -68,6 +68,12 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     roles: ['Admin', 'Manager']
   },
   {
+    label: 'My Projects',
+    icon: 'assignment',
+    route: '/my-projects',
+    roles: ['Employee']
+  },
+  {
     label: 'Clients',
     icon: 'business',
     route: '/clients',

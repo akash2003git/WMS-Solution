@@ -1,0 +1,153 @@
+<h2 mat-dialog-title>
+  {{ data?.project ? 'Edit Project' : 'Create Project' }}
+</h2>
+
+<mat-dialog-content>
+
+  <form
+    [formGroup]="form"
+    class="grid gap-4 pt-3">
+
+    <mat-form-field appearance="outline">
+
+      <mat-label>
+        Project Name
+      </mat-label>
+
+      <input
+        matInput
+        formControlName="projectName">
+
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+
+      <mat-label>
+        Client
+      </mat-label>
+
+      <mat-select formControlName="clientId">
+
+        <mat-option [value]="null">
+          No Client
+        </mat-option>
+
+        @if (clients$ | async; as response) {
+
+          @for (
+            client of response.data;
+            track client.clientId
+          ) {
+
+            <mat-option
+              [value]="client.clientId">
+
+              {{ client.clientName }}
+
+            </mat-option>
+          }
+        }
+
+      </mat-select>
+
+    </mat-form-field>
+
+    <div class="grid gap-4 md:grid-cols-2">
+
+      <mat-form-field appearance="outline">
+
+        <mat-label>
+          Start Date
+        </mat-label>
+
+        <input
+          matInput
+          [matDatepicker]="startPicker"
+          formControlName="startDate">
+
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="startPicker" />
+
+        <mat-datepicker #startPicker />
+
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+
+        <mat-label>
+          End Date
+        </mat-label>
+
+        <input
+          matInput
+          [matDatepicker]="endPicker"
+          formControlName="endDate">
+
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="endPicker" />
+
+        <mat-datepicker #endPicker />
+
+      </mat-form-field>
+
+    </div>
+
+    <mat-form-field appearance="outline">
+
+      <mat-label>
+        Status
+      </mat-label>
+
+      <mat-select formControlName="status">
+
+        @for (
+          status of statuses;
+          track status
+        ) {
+
+          <mat-option [value]="status">
+
+            {{ status }}
+
+          </mat-option>
+        }
+
+      </mat-select>
+
+    </mat-form-field>
+
+    @if (errorMessage) {
+
+      <p class="text-sm text-red-500">
+        {{ errorMessage }}
+      </p>
+
+    }
+
+  </form>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+  <button
+    mat-button
+    mat-dialog-close>
+
+    Cancel
+
+  </button>
+
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="submitting"
+    (click)="submit()">
+
+    {{ submitting ? 'Saving...' : 'Save' }}
+
+  </button>
+
+</mat-dialog-actions>

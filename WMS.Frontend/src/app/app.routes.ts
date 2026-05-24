@@ -20,6 +20,7 @@ import { roleGuard } from './core/guards/role-guard';
 import { loginRedirectGuard } from './core/guards/login-redirect-guard';
 import { MyLeaves } from './features/leaves/pages/my-leaves/my-leaves';
 import { ManageLeaves } from './features/leaves/pages/manage-leaves/manage-leaves';
+import { MyProjects } from './features/projects/pages/my-projects/my-projects';
 
 export const appRoutes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -111,6 +112,14 @@ export const appRoutes: Routes = [
         canActivate: [roleGuard],
         data: {
           roles: ['Admin', 'Manager']
+        }
+      },
+      {
+        path: 'my-projects',
+        component: MyProjects,
+        canActivate: [roleGuard],
+        data: {
+          roles: ['Employee']
         }
       },
       {
