@@ -177,8 +177,10 @@ stages:
               path: '$(Pipeline.Workspace)/angular-drop'
 
           - script: |
-              echo "Listing workspace..."
-              find $(Pipeline.Workspace)/angular-drop -type f | head -50
+              echo "========== DEBUG =========="
+              pwd
+              ls -R $(Pipeline.Workspace)
+              echo "==========================="
             displayName: 'Debug artifact structure'
 
           - task: AzureStaticWebApp@0
