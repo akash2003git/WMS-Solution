@@ -114,12 +114,12 @@ stages:
       inputs:
         SourceFolder: 'WMS.Frontend'
         Contents: 'staticwebapp.config.json'
-        TargetFolder: 'dist/frontend'
+        TargetFolder: 'dist/frontend/browser'
 
     - task: PublishPipelineArtifact@1
       displayName: 'Upload Angular artifact'
       inputs:
-        targetPath: 'dist/frontend'
+        targetPath: 'dist/frontend/browser'
         artifact: 'angular-drop'
         publishLocation: 'pipeline'
 
