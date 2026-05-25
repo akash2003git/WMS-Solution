@@ -176,9 +176,14 @@ stages:
               artifact: 'angular-drop'
               path: '$(Pipeline.Workspace)/angular-drop'
 
+          - script: |
+              echo "Listing workspace..."
+              find $(Pipeline.Workspace)/angular-drop -type f | head -50
+            displayName: 'Debug artifact structure'
+
           - task: AzureStaticWebApp@0
             displayName: 'Deploy to Static Web Apps'
             inputs:
-              app_location: '$(Pipeline.Workspace)/angular-drop/browser'
+              app_location: '$(Pipeline.Workspace)/angular-drop'
               skip_app_build: true
               azure_static_web_apps_api_token: '$(STATIC_WEB_APP_TOKEN)'
