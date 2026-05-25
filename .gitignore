@@ -1,4 +1,7 @@
-## Build output
+## Angular build output
+dist/
+
+# Build output
 bin/
 obj/
 out/
