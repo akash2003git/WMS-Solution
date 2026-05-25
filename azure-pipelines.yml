@@ -179,6 +179,6 @@ stages:
           - task: AzureStaticWebApp@0
             displayName: 'Deploy to Static Web Apps'
             inputs:
-              app_location: '$(Pipeline.Workspace)/angular-drop'
+              app_location: '$(Pipeline.Workspace)/angular-drop/browser'
               skip_app_build: true
               azure_static_web_apps_api_token: '$(STATIC_WEB_APP_TOKEN)'
