@@ -22,7 +22,7 @@ variables:
   - name: apiProject
     value: 'WMS.API/WMS.API.csproj'
   - name: azureSubscription
-    value: 'azure-wms-connection'
+    value: 'wms-azure-connection'       #Azure Connection name
   - name: appServiceName
     value: 'wms-api'                   #App Service name
   - name: staticWebAppName
