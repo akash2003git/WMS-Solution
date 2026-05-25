@@ -176,16 +176,18 @@ stages:
               artifact: 'angular-drop'
               path: '$(Pipeline.Workspace)/angular-drop'
 
-          - script: |
-              echo "========== DEBUG =========="
-              pwd
-              ls -R $(Pipeline.Workspace)
-              echo "==========================="
-            displayName: 'Debug artifact structure'
+          - task: CopyFiles@2
+            displayName: 'Copy artifact to working directory'
+            inputs:
+              SourceFolder: '$(Pipeline.Workspace)/angular-drop'
+              Contents: '**'
+              TargetFolder: '$(System.DefaultWorkingDirectory)/angular-drop'
 
           - task: AzureStaticWebApp@0
             displayName: 'Deploy to Static Web Apps'
             inputs:
-              app_location: '$(Pipeline.Workspace)/angular-drop'
+              app_location: 'angular-drop'
               skip_app_build: true
               azure_static_web_apps_api_token: '$(STATIC_WEB_APP_TOKEN)'
+            env:
+              CI: false
