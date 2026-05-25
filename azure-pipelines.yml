@@ -24,7 +24,7 @@ variables:
   - name: azureSubscription
     value: 'wms-azure-connection'       #Azure Connection name
   - name: appServiceName
-    value: 'wms-api'                   #App Service name
+    value: 'wms-api-akash'                   #App Service name
   - name: staticWebAppName
     value: 'wms-frontend'              #Web App name
 
