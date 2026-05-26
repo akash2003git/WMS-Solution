@@ -16,8 +16,11 @@ import { PageHeader } from '../../../../shared/components/page-header/page-heade
 import { Pagination } from '../../../../shared/components/pagination/pagination';
 import { AttendanceService } from '../../services/attendance';
 import { EmployeeService } from '../../../employees/services/employee';
-import { MonthlyAttendanceReport } from '../../models/monthly-attendance-report.model';
 import { RouterLink } from '@angular/router';
+import { AttendanceReportDialog }
+  from '../../components/attendance-report-dialog/attendance-report-dialog';
+import { MatDialog } from '@angular/material/dialog';
+
 
 @Component({
   selector: 'app-attendance-list',
@@ -41,6 +44,9 @@ export class AttendanceList {
   private readonly fb =
     inject(FormBuilder);
 
+  private readonly dialog =
+    inject(MatDialog);
+
   displayedColumns = [
     'employeeName',
     'attendanceDate',
@@ -53,9 +59,6 @@ export class AttendanceList {
   loading = false;
   errorMessage = '';
 
-  expandedEmployeeId: number | null = null;
-
-  employeeReport: MonthlyAttendanceReport | null = null;
 
   filterForm = this.fb.group({
     employeeId: [null],
@@ -137,28 +140,23 @@ export class AttendanceList {
     this.refresh$.next();
   }
 
-  toggleEmployee(employeeId: number): void {
+  openEmployeeReport(
+    employeeId: number,
+    employeeName: string
+  ): void {
 
-    if (this.expandedEmployeeId === employeeId) {
-      this.expandedEmployeeId = null;
-      this.employeeReport = null;
-      return;
-    }
+    this.dialog.open(
+      AttendanceReportDialog,
+      {
+        width: '900px',
+        maxWidth: '95vw',
 
-    this.expandedEmployeeId = employeeId;
-
-    this.attendanceService
-      .getEmployeeMonthlyReport(employeeId)
-      .subscribe({
-        next: response => {
-          this.employeeReport =
-            response.data;
-        },
-
-        error: error => {
-          console.error(error);
+        data: {
+          employeeId,
+          employeeName
         }
-      });
+      }
+    );
   }
 
   private buildFilters() {

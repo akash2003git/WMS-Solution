@@ -18,6 +18,12 @@ public class AttendanceServiceTests
     private readonly Mock<ICurrentUserService>
         _currentUserMock;
 
+    private readonly Mock<IEmployeeRepository>
+        _employeeRepositoryMock;
+
+    private readonly Mock<ILeaveRepository>
+        _leaveRepositoryMock;
+
     private readonly AttendanceService _attendanceService;
 
     public AttendanceServiceTests()
@@ -28,10 +34,18 @@ public class AttendanceServiceTests
         _currentUserMock =
             new Mock<ICurrentUserService>();
 
+        _employeeRepositoryMock =
+            new Mock<IEmployeeRepository>();
+
+        _leaveRepositoryMock =
+            new Mock<ILeaveRepository>();
+
         _attendanceService =
             new AttendanceService(
                 _attendanceRepositoryMock.Object,
-                _currentUserMock.Object);
+                _currentUserMock.Object,
+                _employeeRepositoryMock.Object,
+                _leaveRepositoryMock.Object);
     }
 
     [Fact]

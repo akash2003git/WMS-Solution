@@ -151,7 +151,12 @@
 
           <button
             class="font-medium text-left text-blue-600 hover:underline"
-            (click)="toggleEmployee(attendance.employeeId)">
+            (click)="
+              openEmployeeReport(
+                attendance.employeeId,
+                attendance.employeeName
+              )
+            ">
 
             {{ attendance.employeeName }}
 
@@ -219,7 +224,7 @@
 
         <td mat-cell *matCellDef="let attendance">
 
-          {{ attendance.totalHours || 0 }}
+          {{ (attendance.totalHours || 0) | number:'1.2-2' }}
 
         </td>
 
@@ -251,84 +256,6 @@
         " >
 
     </table>
-
-    @if (expandedEmployeeId && employeeReport) {
-
-      <div class="border-t border-gray-200 bg-gray-50 p-5">
-
-        <h3 class="mb-4 text-lg font-semibold">
-
-          Monthly Report
-
-        </h3>
-
-        <div class="grid gap-4 md:grid-cols-5">
-
-          <div class="rounded-xl bg-white p-4 border">
-
-            <p class="text-sm text-gray-500">
-              Present Days
-            </p>
-
-            <p class="text-2xl font-bold">
-              {{ employeeReport.totalPresentDays }}
-            </p>
-
-          </div>
-
-          <div class="rounded-xl bg-white p-4 border">
-
-            <p class="text-sm text-gray-500">
-              Absent Days
-            </p>
-
-            <p class="text-2xl font-bold">
-              {{ employeeReport.totalAbsentDays }}
-            </p>
-
-          </div>
-
-          <div class="rounded-xl bg-white p-4 border">
-
-            <p class="text-sm text-gray-500">
-              Total Hours
-            </p>
-
-            <p class="text-2xl font-bold">
-              {{ employeeReport.totalHoursWorked }}
-            </p>
-
-          </div>
-
-          <div class="rounded-xl bg-white p-4 border">
-
-            <p class="text-sm text-gray-500">
-              Avg Hours
-            </p>
-
-            <p class="text-2xl font-bold">
-              {{ employeeReport.averageHoursPerDay }}
-            </p>
-
-          </div>
-
-          <div class="rounded-xl bg-white p-4 border">
-
-            <p class="text-sm text-gray-500">
-              Attendance %
-            </p>
-
-            <p class="text-2xl font-bold">
-              {{ employeeReport.attendancePercentage }}%
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    }
 
     <div class="border-t border-gray-200 p-4">
 

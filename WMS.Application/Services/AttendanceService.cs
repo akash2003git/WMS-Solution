@@ -73,7 +73,11 @@ public class AttendanceService : IAttendanceService
 
         attendance.CheckOut = DateTime.UtcNow;
 
-        attendance.TotalHours = (attendance.CheckOut.Value - attendance.CheckIn).TotalHours;
+        attendance.TotalHours =
+            Math.Round(
+                (attendance.CheckOut.Value
+                - attendance.CheckIn).TotalHours,
+                2);
 
         await _attendanceRepository.UpdateAttendanceAsync(attendance);
 

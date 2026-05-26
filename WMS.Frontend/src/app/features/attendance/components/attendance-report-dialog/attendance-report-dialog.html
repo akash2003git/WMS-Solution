@@ -1,0 +1,118 @@
+<h2
+  mat-dialog-title
+  class="border-b border-gray-200">
+
+  {{ data.employeeName }}
+
+</h2>
+
+<mat-dialog-content class="min-h-55 p-6">
+
+  @if (report$ | async; as report) {
+
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+
+      <div class="rounded-xl border bg-white p-4">
+
+        <p class="text-sm text-gray-500">
+          Present Days
+        </p>
+
+        <p class="text-2xl font-bold">
+          {{ report.totalPresentDays }}
+        </p>
+
+      </div>
+
+      <div class="rounded-xl border bg-white p-4">
+
+        <p class="text-sm text-gray-500">
+          Absent Days
+        </p>
+
+        <p class="text-2xl font-bold">
+          {{ report.totalAbsentDays }}
+        </p>
+
+      </div>
+
+      <div class="rounded-xl border bg-white p-4">
+
+        <p class="text-sm text-gray-500">
+          Total Hours
+        </p>
+
+        <p class="text-2xl font-bold">
+          {{ report.totalHoursWorked }}
+        </p>
+
+      </div>
+
+      <div class="rounded-xl border bg-white p-4">
+
+        <p class="text-sm text-gray-500">
+          Avg Hours
+        </p>
+
+        <p class="text-2xl font-bold">
+          {{ report.averageHoursPerDay }}
+        </p>
+
+      </div>
+
+      <div class="rounded-xl border bg-white p-4">
+
+        <p class="text-sm text-gray-500">
+          Attendance %
+        </p>
+
+        <p class="text-2xl font-bold">
+          {{ report.attendancePercentage }}%
+        </p>
+
+      </div>
+
+    </div>
+
+  } @else {
+
+    <div class="flex justify-center py-10">
+
+      <mat-spinner diameter="40" />
+
+    </div>
+
+  }
+
+  @if (errorMessage) {
+
+    <div
+      class="
+        mt-4
+        rounded-xl
+        border
+        border-red-200
+        bg-red-50
+        p-4
+        text-red-700
+      ">
+
+      {{ errorMessage }}
+
+    </div>
+
+  }
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+  <button
+    mat-button
+    mat-dialog-close>
+
+    Close
+
+  </button>
+
+</mat-dialog-actions>

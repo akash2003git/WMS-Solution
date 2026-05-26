@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WMS.Domain.Entities;
 using WMS.Domain.Interfaces;
+using WMS.Domain.Enums;
 using WMS.Infrastructure.Data;
 
 namespace WMS.Infrastructure.Repositories;
@@ -60,7 +61,12 @@ public class AttendanceRepository : IAttendanceRepository
         return await _context.Employees
             .Include(e => e.Department)
             .Include(e => e.Role)
-            .Where(e => !attendedEmployeeIds.Contains(e.EmployeeId))
+            .Where(e =>
+                e.Status == EmployeeStatus.Active
+                &&
+                !attendedEmployeeIds.Contains(
+                    e.EmployeeId
+                ))
             .ToListAsync();
     }
 }
