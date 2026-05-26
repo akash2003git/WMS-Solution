@@ -49,8 +49,13 @@ public class DashboardRepository
             DateOnly.FromDateTime(DateTime.Today);
 
         return await _context.Attendances
+            .Include(a => a.Employee)
             .CountAsync(a =>
-                a.AttendanceDate == today);
+                a.AttendanceDate == today
+                &&
+                a.Employee != null
+                &&
+                a.Employee.Status == EmployeeStatus.Active);
     }
 
     public async Task<int>

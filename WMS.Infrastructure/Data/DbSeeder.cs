@@ -283,7 +283,10 @@ public static class DbSeeder
             return;
 
         var employees =
-            await context.Employees.ToListAsync();
+            await context.Employees
+                .Where(e =>
+                    e.Status == EmployeeStatus.Active)
+                .ToListAsync();
 
         var attendances = new List<Attendance>();
 
