@@ -119,9 +119,14 @@ public class DashboardService
                     .GetEmployeeAttendanceThisMonthAsync(
                         employeeId),
 
-            LeaveCountThisMonth =
+            LeaveDaysThisMonth =
                 await _dashboardRepository
-                    .GetEmployeeLeaveCountThisMonthAsync(
+                    .GetEmployeeLeaveDaysThisMonthAsync(
+                        employeeId),
+
+            AbsentDaysThisMonth =
+                await _dashboardRepository
+                    .GetEmployeeAbsentDaysThisMonthAsync(
                         employeeId),
 
             Announcements =

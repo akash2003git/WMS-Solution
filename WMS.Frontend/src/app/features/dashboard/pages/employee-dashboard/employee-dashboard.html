@@ -9,7 +9,9 @@
 
     <!-- STATS -->
 
-    <div class="grid gap-4 md:grid-cols-3">
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+
+      <!-- PRESENT DAYS -->
 
       <mat-card appearance="outlined" class="rounded-2xl">
 
@@ -49,43 +51,7 @@
 
       </mat-card>
 
-      <mat-card appearance="outlined" class="rounded-2xl">
-
-        <mat-card-content class="flex items-center gap-4 p-5">
-
-          <div
-            class="
-              flex
-              h-12
-              w-12
-              shrink-0
-              items-center
-              justify-center
-              rounded-full
-              bg-orange-50
-            ">
-
-            <mat-icon class="text-orange-500">
-              event_busy
-            </mat-icon>
-
-          </div>
-
-          <div>
-
-            <p class="text-xs text-gray-500">
-              Leaves This Month
-            </p>
-
-            <p class="text-3xl font-semibold">
-              {{ data.leaveCountThisMonth }}
-            </p>
-
-          </div>
-
-        </mat-card-content>
-
-      </mat-card>
+      <!-- LEAVE DAYS -->
 
       <mat-card appearance="outlined" class="rounded-2xl">
 
@@ -104,6 +70,86 @@
             ">
 
             <mat-icon class="text-blue-600">
+              event_busy
+            </mat-icon>
+
+          </div>
+
+          <div>
+
+            <p class="text-xs text-gray-500">
+              Leave Days
+            </p>
+
+            <p class="text-3xl font-semibold">
+              {{ data.leaveDaysThisMonth }}
+            </p>
+
+          </div>
+
+        </mat-card-content>
+
+      </mat-card>
+
+      <!-- ABSENT DAYS -->
+
+      <mat-card appearance="outlined" class="rounded-2xl">
+
+        <mat-card-content class="flex items-center gap-4 p-5">
+
+          <div
+            class="
+              flex
+              h-12
+              w-12
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              bg-red-50
+            ">
+
+            <mat-icon class="text-red-500">
+              person_off
+            </mat-icon>
+
+          </div>
+
+          <div>
+
+            <p class="text-xs text-gray-500">
+              Absent Days
+            </p>
+
+            <p class="text-3xl font-semibold">
+              {{ data.absentDaysThisMonth }}
+            </p>
+
+          </div>
+
+        </mat-card-content>
+
+      </mat-card>
+
+      <!-- PROJECTS -->
+
+      <mat-card appearance="outlined" class="rounded-2xl">
+
+        <mat-card-content class="flex items-center gap-4 p-5">
+
+          <div
+            class="
+              flex
+              h-12
+              w-12
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              bg-orange-50
+            ">
+
+            <mat-icon class="text-orange-500">
               assignment
             </mat-icon>
 
@@ -130,6 +176,8 @@
     <!-- CHART + ANNOUNCEMENTS -->
 
     <div class="mt-4 grid gap-4 lg:grid-cols-5">
+
+      <!-- ATTENDANCE CHART -->
 
       <mat-card
         appearance="outlined"
@@ -173,6 +221,8 @@
         </mat-card-content>
 
       </mat-card>
+
+      <!-- ANNOUNCEMENTS -->
 
       <mat-card
         appearance="outlined"
@@ -571,6 +621,7 @@
           }
 
         </div>
+
       }
 
     </div>

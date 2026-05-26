@@ -62,6 +62,24 @@ public class LeaveRepository : ILeaveRepository
             .ToListAsync();
     }
 
+    public async Task<List<Leave>>
+        GetApprovedLeavesAsync(
+            int employeeId,
+            DateOnly fromDate,
+            DateOnly toDate)
+    {
+        return await _context.Leaves
+            .Where(l =>
+                l.EmpId == employeeId
+                &&
+                l.Status == LeaveStatus.Approved
+                &&
+                l.FromDate <= toDate
+                &&
+                l.ToDate >= fromDate)
+            .ToListAsync();
+    }
+
     public async Task<bool> HasOverlappingLeaveAsync(
         int employeeId,
         DateOnly fromDate,

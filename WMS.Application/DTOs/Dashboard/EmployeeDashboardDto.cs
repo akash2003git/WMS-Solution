@@ -7,13 +7,11 @@ public class EmployeeDashboardDto
 {
     public int PresentDaysThisMonth { get; set; }
 
-    public int LeaveCountThisMonth { get; set; }
+    public int LeaveDaysThisMonth { get; set; }
 
-    public List<AnnouncementResponseDto>
-        Announcements
-    { get; set; } = [];
+    public int AbsentDaysThisMonth { get; set; }
 
-    public List<ProjectResponseDto>
-        AssignedProjects
-    { get; set; } = [];
+    public List<AnnouncementResponseDto> Announcements { get; set; } = [];
+
+    public List<ProjectResponseDto> AssignedProjects { get; set; } = [];
 }

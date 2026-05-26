@@ -12,11 +12,19 @@ public class AttendanceService : IAttendanceService
 {
     private readonly IAttendanceRepository _attendanceRepository;
     private readonly ICurrentUserService _currentUser;
+    private readonly IEmployeeRepository _employeeRepository;
+    private readonly ILeaveRepository _leaveRepository;
 
-    public AttendanceService(IAttendanceRepository attendanceRepository, ICurrentUserService currentUser)
+    public AttendanceService(
+        IAttendanceRepository attendanceRepository,
+        ICurrentUserService currentUser,
+        IEmployeeRepository employeeRepository,
+        ILeaveRepository leaveRepository)
     {
         _attendanceRepository = attendanceRepository;
         _currentUser = currentUser;
+        _employeeRepository = employeeRepository;
+        _leaveRepository = leaveRepository;
     }
 
     public async Task<AttendanceResponseDto> CheckInAsync(AttendanceRequestDto request)
@@ -149,60 +157,156 @@ public class AttendanceService : IAttendanceService
         };
     }
 
-    public async Task<MonthlyAttendanceReportDto> GetMonthlyReportAsync(int? employeeId = null)
+    public async Task<MonthlyAttendanceReportDto>
+        GetMonthlyReportAsync(
+            int? employeeId = null)
     {
-        int empId = employeeId ?? _currentUser.EmployeeId
-          ?? throw new UnauthorizedException("Employee account required");
+        int empId =
+            employeeId
+            ?? _currentUser.EmployeeId
+            ?? throw new UnauthorizedException(
+                "Employee account required");
 
-        var today = DateTime.UtcNow;
+        var employee =
+            await _employeeRepository
+                .GetByIdAsync(empId);
 
-        DateOnly startDate = new(today.Year, today.Month, 1);
-
-        DateOnly endDate = new(today.Year, today.Month,
-                DateTime.DaysInMonth(today.Year, today.Month));
-
-        var attendances = await _attendanceRepository
-                .GetAttendancesAsync(empId, startDate, endDate);
-
-        double totalHours = attendances.Sum(a => a.TotalHours ?? 0);
-
-        int presentDays = attendances.Count;
-
-        var employee = attendances.FirstOrDefault()?.Employee;
-
-        DateOnly joiningDate = employee?.DOJ ?? startDate;
-
-        DateOnly effectiveStartDate = joiningDate > startDate
-                ? joiningDate
-                : startDate;
-
-        int totalWorkingDays = 0;
-
-        for (DateOnly date = effectiveStartDate; date <= endDate; date = date.AddDays(1))
+        if (employee is null)
         {
-            if (date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday)
+            throw new NotFoundException(
+                "Employee not found");
+        }
+
+        var todayUtc = DateTime.UtcNow;
+
+        DateOnly monthStart =
+            new(todayUtc.Year, todayUtc.Month, 1);
+
+        DateOnly today =
+            DateOnly.FromDateTime(todayUtc);
+
+        DateOnly effectiveStartDate =
+            employee.DOJ > monthStart
+                ? employee.DOJ
+                : monthStart;
+
+        var attendances =
+            await _attendanceRepository
+                .GetAttendancesAsync(
+                    empId,
+                    effectiveStartDate,
+                    today);
+
+        var approvedLeaves =
+            await _leaveRepository
+                .GetApprovedLeavesAsync(
+                    empId,
+                    effectiveStartDate,
+                    today);
+
+        DateOnly yesterday =
+            today.AddDays(-1);
+
+        int elapsedDays =
+            yesterday.Day;
+
+        int sundayCount = 0;
+
+        for (
+            DateOnly date = effectiveStartDate;
+            date <= yesterday;
+            date = date.AddDays(1))
+        {
+            if (date.DayOfWeek == DayOfWeek.Sunday)
             {
-                totalWorkingDays++;
+                sundayCount++;
             }
         }
 
+        int presentDays =
+            attendances
+                .Select(a => a.AttendanceDate)
+                .Distinct()
+                .Count();
+
+        int leaveDays = 0;
+
+        foreach (var leave in approvedLeaves)
+        {
+            DateOnly leaveStart =
+                leave.FromDate > effectiveStartDate
+                    ? leave.FromDate
+                    : effectiveStartDate;
+
+            DateOnly leaveEnd =
+                leave.ToDate < yesterday
+                    ? leave.ToDate
+                    : yesterday;
+
+            for (
+                DateOnly date = leaveStart;
+                date <= leaveEnd;
+                date = date.AddDays(1))
+            {
+                if (date.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    leaveDays++;
+                }
+            }
+        }
+
+        int expectedWorkingDays =
+            elapsedDays
+            - sundayCount
+            - leaveDays;
+
+        expectedWorkingDays =
+            Math.Max(expectedWorkingDays, 0);
+
+        int absentDays =
+            Math.Max(
+                expectedWorkingDays - presentDays,
+                0);
+
+        double attendancePercentage =
+            expectedWorkingDays == 0
+                ? 0
+                : Math.Round(
+                    (double)presentDays
+                    / expectedWorkingDays * 100,
+                    2);
+
+        double totalHours =
+            attendances.Sum(a =>
+                a.TotalHours ?? 0);
+
         return new MonthlyAttendanceReportDto
         {
-            EmployeeId = empId,
+            EmployeeId = employee.EmployeeId,
 
-            EmployeeName = attendances.FirstOrDefault()?.Employee != null
-                    ? $"{attendances.First().Employee!.FirstName} {attendances.First().Employee!.LastName}"
-                    : "",
+            EmployeeName =
+                $"{employee.FirstName} {employee.LastName}",
+
+            Year = today.Year,
+
+            Month = today.Month,
 
             TotalPresentDays = presentDays,
 
-            TotalAbsentDays = totalWorkingDays - presentDays,
+            TotalAbsentDays = absentDays,
 
-            TotalHoursWorked = Math.Round(totalHours, 2),
+            TotalHoursWorked =
+                Math.Round(totalHours, 2),
 
-            AverageHoursPerDay = presentDays == 0
+            AverageHoursPerDay =
+                presentDays == 0
                     ? 0
-                    : Math.Round(totalHours / presentDays, 2)
+                    : Math.Round(
+                        totalHours / presentDays,
+                        2),
+
+            AttendancePercentage =
+                attendancePercentage
         };
     }
 

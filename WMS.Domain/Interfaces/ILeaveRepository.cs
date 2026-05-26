@@ -15,6 +15,11 @@ public interface ILeaveRepository
         int? employeeId = null,
         LeaveStatus? status = null);
 
+    Task<List<Leave>> GetApprovedLeavesAsync(
+        int employeeId,
+        DateOnly fromDate,
+        DateOnly toDate);
+
     Task<bool> HasOverlappingLeaveAsync(
         int employeeId,
         DateOnly fromDate,

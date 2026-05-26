@@ -98,17 +98,77 @@ public class DashboardRepository
     }
 
     public async Task<int>
-        GetEmployeeLeaveCountThisMonthAsync(
+        GetEmployeeLeaveDaysThisMonthAsync(
             int employeeId)
     {
         var today = DateTime.Today;
 
-        return await _context.Leaves
-            .CountAsync(l =>
-                l.EmpId == employeeId &&
-                l.Status == LeaveStatus.Approved &&
-                l.FromDate.Month == today.Month &&
-                l.FromDate.Year == today.Year);
+        var startOfMonth =
+            new DateOnly(today.Year, today.Month, 1);
+
+        var endOfMonth =
+            new DateOnly(
+                today.Year,
+                today.Month,
+                DateTime.DaysInMonth(today.Year, today.Month));
+
+        var leaves =
+            await _context.Leaves
+                .Where(l =>
+                    l.EmpId == employeeId &&
+                    l.Status == LeaveStatus.Approved &&
+                    l.FromDate <= endOfMonth &&
+                    l.ToDate >= startOfMonth)
+                .ToListAsync();
+
+        int totalLeaveDays = 0;
+
+        foreach (var leave in leaves)
+        {
+            var effectiveStart =
+                leave.FromDate > startOfMonth
+                    ? leave.FromDate
+                    : startOfMonth;
+
+            var effectiveEnd =
+                leave.ToDate < endOfMonth
+                    ? leave.ToDate
+                    : endOfMonth;
+
+            totalLeaveDays +=
+                effectiveEnd.DayNumber
+                - effectiveStart.DayNumber
+                + 1;
+        }
+
+        return totalLeaveDays;
+    }
+
+    public async Task<int>
+        GetEmployeeAbsentDaysThisMonthAsync(
+            int employeeId)
+    {
+        var today = DateTime.Today;
+
+        int totalWorkingDays =
+            GetWorkingDaysInMonth(
+                today.Year,
+                today.Month);
+
+        int presentDays =
+            await GetEmployeeAttendanceThisMonthAsync(
+                employeeId);
+
+        int leaveDays =
+            await GetEmployeeLeaveDaysThisMonthAsync(
+                employeeId);
+
+        int absentDays =
+            totalWorkingDays
+            - presentDays
+            - leaveDays;
+
+        return Math.Max(absentDays, 0);
     }
 
     public async Task<List<Project>>
@@ -130,5 +190,30 @@ public class DashboardRepository
         return await _context.Employees
             .CountAsync(e =>
                 e.Status == EmployeeStatus.Active);
+    }
+
+    private int GetWorkingDaysInMonth(
+        int year,
+        int month)
+    {
+        int daysInMonth =
+            DateTime.DaysInMonth(year, month);
+
+        int workingDays = 0;
+
+        for (int day = 1; day <= daysInMonth; day++)
+        {
+            var date = new DateTime(year, month, day);
+
+            if (
+                date.DayOfWeek != DayOfWeek.Saturday &&
+                date.DayOfWeek != DayOfWeek.Sunday
+            )
+            {
+                workingDays++;
+            }
+        }
+
+        return workingDays;
     }
 }

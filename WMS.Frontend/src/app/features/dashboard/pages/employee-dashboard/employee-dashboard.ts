@@ -35,13 +35,15 @@ export class EmployeeDashboard {
   doughnutData: ChartData<'doughnut'> = {
     labels: [
       'Present Days',
-      'Leaves'
+      'Leave Days',
+      'Absent Days'
     ],
     datasets: [
       {
         data: [],
         backgroundColor: [
           '#4ade80',
+          '#60a5fa',
           '#f87171'
         ],
         borderWidth: 0,
@@ -82,7 +84,8 @@ export class EmployeeDashboard {
               ...this.doughnutData.datasets[0],
               data: [
                 data.presentDaysThisMonth,
-                data.leaveCountThisMonth
+                data.leaveDaysThisMonth,
+                data.absentDaysThisMonth
               ]
             }
           ]

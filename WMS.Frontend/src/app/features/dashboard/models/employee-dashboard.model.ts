@@ -3,7 +3,8 @@ import { Project } from '../../projects/models/project.model';
 
 export interface IEmployeeDashboard {
   presentDaysThisMonth: number;
-  leaveCountThisMonth: number;
+  leaveDaysThisMonth: number;
+  absentDaysThisMonth: number;
   announcements: Announcement[];
   assignedProjects: Project[];
 }

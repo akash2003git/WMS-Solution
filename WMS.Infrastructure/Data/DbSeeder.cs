@@ -287,16 +287,37 @@ public static class DbSeeder
 
         var attendances = new List<Attendance>();
 
+        var today = DateTime.UtcNow;
+
+        var startOfMonth =
+            new DateOnly(today.Year, today.Month, 1);
+
+        var endDate =
+            DateOnly.FromDateTime(today);
+
         foreach (var employee in employees)
         {
-            for (int day = 1; day <= 20; day++)
+            for (
+                var date = startOfMonth;
+                date <= endDate;
+                date = date.AddDays(1))
             {
-                if (day % 6 == 0)
+                if (
+                    date.DayOfWeek == DayOfWeek.Saturday
+                    ||
+                    date.DayOfWeek == DayOfWeek.Sunday
+                )
+                {
                     continue;
+                }
 
-                var date =
-                    DateOnly.FromDateTime(
-                        DateTime.UtcNow.AddDays(-day));
+                // simulate 1 random absence
+                if (
+                    Random.Shared.Next(1, 20) == 1
+                )
+                {
+                    continue;
+                }
 
                 var checkIn =
                     date.ToDateTime(

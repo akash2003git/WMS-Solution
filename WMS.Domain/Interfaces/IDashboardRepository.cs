@@ -25,7 +25,10 @@ public interface IDashboardRepository
     Task<int> GetEmployeeAttendanceThisMonthAsync(
         int employeeId);
 
-    Task<int> GetEmployeeLeaveCountThisMonthAsync(
+    Task<int> GetEmployeeLeaveDaysThisMonthAsync(
+        int employeeId);
+
+    Task<int> GetEmployeeAbsentDaysThisMonthAsync(
         int employeeId);
 
     Task<List<Project>>
