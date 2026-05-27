@@ -34,4 +34,13 @@ public interface IDashboardRepository
     Task<List<Project>>
         GetEmployeeProjectsAsync(
             int employeeId);
+
+    Task<int> GetAttendanceTodayAsync(
+        int departmentId);
+
+    Task<int> GetActiveEmployeesAsync(
+        int departmentId);
+
+    Task<int> GetPendingLeaveRequestsAsync(
+        int departmentId);
 }

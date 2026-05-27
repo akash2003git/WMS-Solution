@@ -221,4 +221,48 @@ public class DashboardRepository
 
         return workingDays;
     }
+
+    public async Task<int>
+        GetAttendanceTodayAsync(
+            int departmentId)
+    {
+        var today =
+            DateOnly.FromDateTime(DateTime.Today);
+
+        return await _context.Attendances
+            .Include(a => a.Employee)
+            .CountAsync(a =>
+                a.AttendanceDate == today
+                &&
+                a.Employee != null
+                &&
+                a.Employee.Status == EmployeeStatus.Active
+                &&
+                a.Employee.DepartmentId == departmentId);
+    }
+
+    public async Task<int>
+        GetActiveEmployeesAsync(
+            int departmentId)
+    {
+        return await _context.Employees
+            .CountAsync(e =>
+                e.Status == EmployeeStatus.Active
+                &&
+                e.DepartmentId == departmentId);
+    }
+
+    public async Task<int>
+        GetPendingLeaveRequestsAsync(
+            int departmentId)
+    {
+        return await _context.Leaves
+            .Include(l => l.Employee)
+            .CountAsync(l =>
+                l.Status == LeaveStatus.Pending
+                &&
+                l.Employee != null
+                &&
+                l.Employee.DepartmentId == departmentId);
+    }
 }
