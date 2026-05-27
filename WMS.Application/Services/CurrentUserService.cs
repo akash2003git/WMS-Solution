@@ -50,4 +50,19 @@ public class CurrentUserService : ICurrentUserService
                 : null;
         }
     }
+
+    public int? DepartmentId
+    {
+        get
+        {
+            var value = _httpContextAccessor
+              .HttpContext?
+              .User?
+              .FindFirst("DepartmentId")?.Value;
+
+            return int.TryParse(value, out int departmentId)
+                ? departmentId
+                : null;
+        }
+    }
 }

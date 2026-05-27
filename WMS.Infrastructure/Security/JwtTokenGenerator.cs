@@ -31,8 +31,8 @@ public class JwtTokenGenerator : IJwtTokenGenerator
             new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Role, user.Role.RoleName),
-            new Claim("EmployeeId", user.EmployeeId?.ToString() ?? "")
-        };
+            new Claim("EmployeeId", user.EmployeeId?.ToString() ?? ""),
+            new Claim( "DepartmentId", user.Employee?.DepartmentId.ToString() ?? "") };
 
         var expiryMinutes = Convert.ToDouble(jwtSettings["ExpiryMinutes"]);
 

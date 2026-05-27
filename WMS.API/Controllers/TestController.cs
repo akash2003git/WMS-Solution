@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WMS.Application.Interfaces;
 
 namespace WMS.API.Controllers;
 
@@ -31,5 +32,20 @@ public class TestController : ControllerBase
     public IActionResult Error()
     {
         throw new Exception("Test exception");
+    }
+
+    [HttpGet("me")]
+    [Authorize]
+    public IActionResult Me(
+        [FromServices] ICurrentUserService currentUser)
+    {
+        return Ok(new
+        {
+            currentUser.UserId,
+            currentUser.Username,
+            currentUser.Role,
+            currentUser.EmployeeId,
+            currentUser.DepartmentId
+        });
     }
 }
