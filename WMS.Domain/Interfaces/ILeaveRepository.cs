@@ -24,4 +24,8 @@ public interface ILeaveRepository
         int employeeId,
         DateOnly fromDate,
         DateOnly toDate);
+
+    Task<List<Leave>> GetLeavesByDepartmentAsync(
+        int departmentId,
+        LeaveStatus? status = null);
 }

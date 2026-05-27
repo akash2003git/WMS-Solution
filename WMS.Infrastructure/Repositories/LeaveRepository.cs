@@ -98,4 +98,28 @@ public class LeaveRepository : ILeaveRepository
             &&
             l.ToDate >= fromDate);
     }
+
+    public async Task<List<Leave>>
+        GetLeavesByDepartmentAsync(
+            int departmentId,
+            LeaveStatus? status = null)
+    {
+        var query = _context.Leaves
+            .Include(l => l.Employee)
+            .Where(l =>
+                l.Employee != null
+                &&
+                l.Employee.DepartmentId == departmentId)
+            .AsQueryable();
+
+        if (status.HasValue)
+        {
+            query = query.Where(l =>
+                l.Status == status.Value);
+        }
+
+        return await query
+            .OrderByDescending(l => l.AppliedOn)
+            .ToListAsync();
+    }
 }

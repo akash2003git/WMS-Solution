@@ -114,6 +114,8 @@ public class LeaveService : ILeaveService
                 "Leave not found");
         }
 
+        EnsureManagerCanManageLeave(leave);
+
         if (leave.Status != LeaveStatus.Pending)
         {
             throw new BusinessRuleException(
@@ -144,6 +146,8 @@ public class LeaveService : ILeaveService
             throw new NotFoundException(
                 "Leave not found");
         }
+
+        EnsureManagerCanManageLeave(leave);
 
         if (leave.Status != LeaveStatus.Pending)
         {
@@ -196,11 +200,28 @@ public class LeaveService : ILeaveService
                     true);
         }
 
-        var leaves =
-            await _leaveRepository
-                .GetLeavesAsync(
-                    filter.EmployeeId,
-                    status);
+        List<Leave> leaves;
+
+        if (_currentUser.Role == "Manager")
+        {
+            var departmentId =
+                _currentUser.DepartmentId
+                ?? 0;
+
+            leaves =
+                await _leaveRepository
+                    .GetLeavesByDepartmentAsync(
+                        departmentId,
+                        status);
+        }
+        else
+        {
+            leaves =
+                await _leaveRepository
+                    .GetLeavesAsync(
+                        filter.EmployeeId,
+                        status);
+        }
 
         return leaves
             .Select(MapToDto)
@@ -210,11 +231,28 @@ public class LeaveService : ILeaveService
     public async Task<List<LeaveResponseDto>>
         GetPendingLeavesAsync()
     {
-        var leaves =
-            await _leaveRepository
-                .GetLeavesAsync(
-                    null,
-                    LeaveStatus.Pending);
+        List<Leave> leaves;
+
+        if (_currentUser.Role == "Manager")
+        {
+            var departmentId =
+                _currentUser.DepartmentId
+                ?? 0;
+
+            leaves =
+                await _leaveRepository
+                    .GetLeavesByDepartmentAsync(
+                        departmentId,
+                        LeaveStatus.Pending);
+        }
+        else
+        {
+            leaves =
+                await _leaveRepository
+                    .GetLeavesAsync(
+                        null,
+                        LeaveStatus.Pending);
+        }
 
         return leaves
             .Select(MapToDto)
@@ -259,5 +297,29 @@ public class LeaveService : ILeaveService
             ApprovedOn =
                 leave.ApprovedOn
         };
+    }
+
+    private void EnsureManagerCanManageLeave(
+        Leave leave)
+    {
+        if (_currentUser.Role != "Manager")
+        {
+            return;
+        }
+
+        var departmentId =
+            _currentUser.DepartmentId;
+
+        if (
+            departmentId == null
+            ||
+            leave.Employee == null
+            ||
+            leave.Employee.DepartmentId != departmentId
+        )
+        {
+            throw new ForbiddenException(
+                "You cannot manage leaves outside your department");
+        }
     }
 }
