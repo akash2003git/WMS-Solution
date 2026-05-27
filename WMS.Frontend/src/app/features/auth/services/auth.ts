@@ -21,27 +21,30 @@ export class AuthService {
   private readonly apiUrl = `${environment.apiUrl}/Auth`;
 
   private readonly currentUserSubject =
-    new BehaviorSubject<CurrentUser | null>(
-      this.initializeUser()
-    );
+    new BehaviorSubject<CurrentUser | null>(null);
+
+  currentUser$ = this.currentUserSubject.asObservable();
+
+  constructor() {
+    const user = this.initializeUser();
+    this.currentUserSubject.next(user);
+  }
 
   private initializeUser(): CurrentUser | null {
     const token = this.storageService.getToken();
-
     const user = this.storageService.getUser<CurrentUser>();
+
     if (!token || !user) {
       return null;
     }
 
     if (this.isTokenExpired(token)) {
-      this.logout();
+      this.storageService.clear();
       return null;
     }
 
     return user;
   }
-
-  currentUser$ = this.currentUserSubject.asObservable();
 
   login(request: LoginRequest): Observable<ApiResponse<LoginResponse>> {
     return this.http.post<ApiResponse<LoginResponse>>(
