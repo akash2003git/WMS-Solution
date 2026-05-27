@@ -19,4 +19,6 @@ public interface IProjectService
     Task RemoveEmployeeAsync(int projectId, int employeeId);
 
     Task<List<ProjectAllocationDto>> GetProjectAllocationsAsync(int projectId);
+
+    Task<List<ProjectResponseDto>> GetEmployeeProjectsAsync(int employeeId);
 }

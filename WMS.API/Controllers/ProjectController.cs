@@ -147,4 +147,20 @@ public class ProjectsController : ControllerBase
             ApiResponse<List<ProjectAllocationDto>>
             .SuccessResponse(response));
     }
+
+    [HttpGet("employee/{employeeId}")]
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult>
+        GetEmployeeProjects(
+            int employeeId)
+    {
+        var response =
+            await _projectService
+                .GetEmployeeProjectsAsync(
+                    employeeId);
+
+        return Ok(
+            ApiResponse<List<ProjectResponseDto>>
+            .SuccessResponse(response));
+    }
 }

@@ -50,6 +50,10 @@ export class EmployeeService {
     );
   }
 
+  getEmployeeById(id: number) {
+    return this.http.get<ApiResponse<Employee>>(`${this.apiUrl}/${id}`);
+  }
+
   createEmployee(request: CreateEmployeeRequest) {
     return this.http.post<ApiResponse<CreateEmployeeResponse>>(this.apiUrl, request);
   }

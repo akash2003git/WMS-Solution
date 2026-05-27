@@ -286,4 +286,28 @@ public class ProjectService : IProjectService
                     .Count(a => a.Status)
         };
     }
+
+    public async Task<List<ProjectResponseDto>>
+        GetEmployeeProjectsAsync(
+            int employeeId)
+    {
+        bool employeeExists =
+            await _projectRepository
+                .EmployeeExistsAsync(employeeId);
+
+        if (!employeeExists)
+        {
+            throw new NotFoundException(
+                "Employee not found");
+        }
+
+        var projects =
+            await _projectRepository
+                .GetEmployeeProjectsAsync(
+                    employeeId);
+
+        return projects
+            .Select(MapToDto)
+            .ToList();
+    }
 }

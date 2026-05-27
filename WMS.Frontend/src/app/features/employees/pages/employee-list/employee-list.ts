@@ -26,6 +26,7 @@ import { EmployeeFormDialog } from '../../components/employee-form-dialog/employ
 import { EmployeeCredentialsDialog } from '../../components/employee-credentials-dialog/employee-credentials-dialog';
 import { EMPLOYEE_STATUS_OPTIONS } from '../../constants/employee.constants';
 import { StatusChip } from '../../../../shared/components/status-chip/status-chip';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-employee-list',
@@ -35,6 +36,7 @@ import { StatusChip } from '../../../../shared/components/status-chip/status-chi
     PageHeader,
     Pagination,
     StatusChip,
+    RouterLink,
     ...MATERIAL_MODULES
   ],
   templateUrl: './employee-list.html'

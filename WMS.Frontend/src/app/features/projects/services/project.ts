@@ -43,4 +43,10 @@ export class ProjectService {
   removeEmployee(projectId: number, employeeId: number) {
     return this.http.delete<ApiResponse<string>>(`${this.apiUrl}/${projectId}/remove-employee/${employeeId}`);
   }
+
+  getEmployeeProjects(employeeId: number) {
+    return this.http.get<ApiResponse<Project[]>>(
+      `${this.apiUrl}/employee/${employeeId}`
+    );
+  }
 }

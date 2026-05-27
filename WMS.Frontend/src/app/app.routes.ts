@@ -21,6 +21,7 @@ import { loginRedirectGuard } from './core/guards/login-redirect-guard';
 import { MyLeaves } from './features/leaves/pages/my-leaves/my-leaves';
 import { ManageLeaves } from './features/leaves/pages/manage-leaves/manage-leaves';
 import { MyProjects } from './features/projects/pages/my-projects/my-projects';
+import { EmployeeDetails } from './features/employees/pages/employee-details/employee-details';
 
 export const appRoutes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -61,6 +62,14 @@ export const appRoutes: Routes = [
       {
         path: 'employees',
         component: EmployeeList,
+        canActivate: [roleGuard],
+        data: {
+          roles: ['Admin', 'Manager']
+        }
+      },
+      {
+        path: 'employees/:id',
+        component: EmployeeDetails,
         canActivate: [roleGuard],
         data: {
           roles: ['Admin', 'Manager']
@@ -143,7 +152,7 @@ export const appRoutes: Routes = [
         component: ReportDashboard,
         canActivate: [roleGuard],
         data: { roles: ['Admin'] }
-      }
+      },
     ]
   },
   { path: '**', redirectTo: 'login' }

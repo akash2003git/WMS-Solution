@@ -85,10 +85,10 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     route: '/announcements',
     roles: ['Admin', 'Manager', 'Employee']
   },
-  {
-    label: 'Reports',
-    icon: 'analytics',
-    route: '/reports',
-    roles: ['Admin']
-  }
+  // {
+  //   label: 'Reports',
+  //   icon: 'analytics',
+  //   route: '/reports',
+  //   roles: ['Admin']
+  // }
 ];
