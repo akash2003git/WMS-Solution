@@ -1,153 +1,210 @@
-<div class="rounded-xl border border-gray-200 p-5">
+<h2
+  mat-dialog-title
+  class="flex items-center justify-between">
 
-  <div class="mb-5">
 
-    <mat-form-field
-      appearance="outline"
-      class="w-full">
+<div class="flex items-center justify-between mb-7">
 
-      <mat-label>
-        Assign Employee
-      </mat-label>
+  <div>
 
-      <input
-        type="text"
-        matInput
-        [formControl]="employeeControl"
-        [matAutocomplete]="auto">
+    <p class="text-xl font-semibold text-gray-900">
 
-<mat-autocomplete
-  #auto="matAutocomplete"
-  (optionSelected)="assignEmployee($event.option.value)">
+      {{ project.projectName }}
 
-        @if (
-          filteredEmployees$ | async;
-          as employees
-        ) {
+    </p>
 
-          @for (
-            employee of employees;
-            track employee.employeeId
-          ) {
+    <p class="mt-1 text-sm text-gray-500">
 
-<mat-option
-  [value]="employee.employeeId">
+      Manage employee allocations
 
-  {{ employee.fullName }}
-  —
-  {{ employee.email }}
-
-</mat-option>
-
-          }
-        }
-
-      </mat-autocomplete>
-
-    </mat-form-field>
+    </p>
 
   </div>
 
-  <div class="overflow-x-auto">
+  <button
+    mat-icon-button
+    (click)="close()">
 
-    <table
-      mat-table
-      [dataSource]="allocations()">
+    <mat-icon>
+      close
+    </mat-icon>
 
-      <ng-container matColumnDef="employee">
-
-        <th mat-header-cell *matHeaderCellDef>
-          Employee
-        </th>
-
-        <td mat-cell *matCellDef="let item">
-          {{ item.employeeName }}
-        </td>
-
-      </ng-container>
-
-      <ng-container matColumnDef="department">
-
-        <th mat-header-cell *matHeaderCellDef>
-          Department
-        </th>
-
-        <td mat-cell *matCellDef="let item">
-          {{ item.department }}
-        </td>
-
-      </ng-container>
-
-      <ng-container matColumnDef="role">
-
-        <th mat-header-cell *matHeaderCellDef>
-          Role
-        </th>
-
-        <td mat-cell *matCellDef="let item">
-          {{ item.role }}
-        </td>
-
-      </ng-container>
-
-      <ng-container matColumnDef="assignedOn">
-
-        <th mat-header-cell *matHeaderCellDef>
-          Assigned
-        </th>
-
-        <td mat-cell *matCellDef="let item">
-          {{ item.assignedOn | date }}
-        </td>
-
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-
-        <th mat-header-cell *matHeaderCellDef>
-          Actions
-        </th>
-
-        <td mat-cell *matCellDef="let item">
-
-          <button
-            mat-button
-            color="warn"
-            (click)="removeEmployee(item.employeeId)">
-
-            Remove
-
-          </button>
-
-        </td>
-
-      </ng-container>
-
-      <tr
-        mat-header-row
-        *matHeaderRowDef="[
-          'employee',
-          'department',
-          'role',
-          'assignedOn',
-          'actions'
-        ]" >
-
-      <tr
-        mat-row
-        *matRowDef="
-          let row;
-          columns: [
-            'employee',
-            'department',
-            'role',
-            'assignedOn',
-            'actions'
-          ];
-        " >
-
-    </table>
-
-  </div>
-
+  </button>
 </div>
+
+</h2>
+
+<mat-dialog-content class="min-h-[400px] min-w-[900px]">
+
+  @if (loading()) {
+
+    <div class="flex justify-center py-16">
+
+      <mat-spinner />
+
+    </div>
+
+  } @else {
+
+    <div class="rounded-xl border border-gray-200 p-5">
+
+      <div class="mb-5">
+
+        <mat-form-field
+          appearance="outline"
+          class="w-full">
+
+          <mat-label>
+            Assign Employee
+          </mat-label>
+
+          <input
+            type="text"
+            matInput
+            [formControl]="employeeControl"
+            [matAutocomplete]="auto">
+
+          <mat-autocomplete
+            #auto="matAutocomplete"
+            (optionSelected)="assignEmployee($event.option.value)">
+
+            @if (
+              filteredEmployees$ | async;
+              as employees
+            ) {
+
+              @for (
+                employee of employees;
+                track employee.employeeId
+              ) {
+
+                <mat-option
+                  [value]="employee.employeeId">
+
+                  {{ employee.fullName }}
+                  —
+                  {{ employee.email }}
+
+                </mat-option>
+
+              }
+
+            }
+
+          </mat-autocomplete>
+
+        </mat-form-field>
+
+      </div>
+
+      <div class="overflow-x-auto">
+
+        <table
+          mat-table
+          [dataSource]="allocations()">
+
+          <ng-container matColumnDef="employee">
+
+            <th mat-header-cell *matHeaderCellDef>
+              Employee
+            </th>
+
+            <td mat-cell *matCellDef="let item">
+              {{ item.employeeName }}
+            </td>
+
+          </ng-container>
+
+          <ng-container matColumnDef="department">
+
+            <th mat-header-cell *matHeaderCellDef>
+              Department
+            </th>
+
+            <td mat-cell *matCellDef="let item">
+              {{ item.department }}
+            </td>
+
+          </ng-container>
+
+          <ng-container matColumnDef="role">
+
+            <th mat-header-cell *matHeaderCellDef>
+              Role
+            </th>
+
+            <td mat-cell *matCellDef="let item">
+              {{ item.role }}
+            </td>
+
+          </ng-container>
+
+          <ng-container matColumnDef="assignedOn">
+
+            <th mat-header-cell *matHeaderCellDef>
+              Assigned
+            </th>
+
+            <td mat-cell *matCellDef="let item">
+              {{ item.assignedOn | date }}
+            </td>
+
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+
+            <th mat-header-cell *matHeaderCellDef>
+              Actions
+            </th>
+
+            <td mat-cell *matCellDef="let item">
+
+              <button
+                mat-button
+                color="warn"
+                (click)="removeEmployee(item.employeeId)">
+
+                Remove
+
+              </button>
+
+            </td>
+
+          </ng-container>
+
+          <tr
+            mat-header-row
+            *matHeaderRowDef="[
+              'employee',
+              'department',
+              'role',
+              'assignedOn',
+              'actions'
+            ]">
+
+          </tr>
+
+          <tr
+            mat-row
+            *matRowDef="
+              let row;
+              columns: [
+                'employee',
+                'department',
+                'role',
+                'assignedOn',
+                'actions'
+              ];
+            ">
+
+          </tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  }
+
+</mat-dialog-content>

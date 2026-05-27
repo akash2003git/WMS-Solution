@@ -53,13 +53,11 @@
 
           <td mat-cell *matCellDef="let project">
 
-            <button
-              class="font-medium text-left hover:text-blue-600"
-              (click)="toggleExpansion(project)">
+<span class="font-medium text-gray-900">
 
-              {{ project.projectName }}
+  {{ project.projectName }}
 
-            </button>
+</span>
 
           </td>
 
@@ -144,27 +142,43 @@
 
         </ng-container>
 
-        <ng-container matColumnDef="actions">
+<ng-container matColumnDef="actions">
 
-          <th mat-header-cell *matHeaderCellDef>
-            Actions
-          </th>
+  <th mat-header-cell *matHeaderCellDef>
+    Actions
+  </th>
 
-          <td mat-cell *matCellDef="let project">
+  <td mat-cell *matCellDef="let project">
 
-            <button
-              mat-icon-button
-              (click)="openEditDialog(project)">
+    <div class="flex items-center gap-1">
 
-              <mat-icon>
-                edit
-              </mat-icon>
+      <button
+        mat-icon-button
+        matTooltip="Manage Allocations"
+        (click)="openAllocationDialog(project)">
 
-            </button>
+        <mat-icon>
+          groups
+        </mat-icon>
 
-          </td>
+      </button>
 
-        </ng-container>
+      <button
+        mat-icon-button
+        matTooltip="Edit Project"
+        (click)="openEditDialog(project)">
+
+        <mat-icon>
+          edit
+        </mat-icon>
+
+      </button>
+
+    </div>
+
+  </td>
+
+</ng-container>
 
         <tr
           mat-header-row
@@ -185,31 +199,6 @@
       </table>
 
     </div>
-
-    @if (expandedProjectId()) {
-
-      <div class="mt-5">
-
-        @if (allocationsLoading()) {
-
-          <div class="flex justify-center py-10">
-
-            <mat-spinner diameter="40" />
-
-          </div>
-
-        } @else {
-
-          <app-project-allocation-panel
-            [projectId]="expandedProjectId()!"
-            [allocations]="allocations()"
-            (allocationChanged)="reloadExpandedProject()" />
-
-        }
-
-      </div>
-
-    }
 
   }
 

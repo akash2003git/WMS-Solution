@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { BehaviorSubject, catchError, finalize, map, of, switchMap } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -8,7 +8,6 @@ import { PageHeader } from '../../../../shared/components/page-header/page-heade
 import { StatusChip } from '../../../../shared/components/status-chip/status-chip';
 import { ProjectService } from '../../services/project';
 import { Project } from '../../models/project.model';
-import { ProjectAllocation } from '../../models/project-allocation.model';
 import { ProjectFormDialog } from '../../components/project-form-dialog/project-form-dialog';
 import { ProjectAllocationPanel } from '../../components/project-allocation-panel/project-allocation-panel';
 
@@ -18,7 +17,6 @@ import { ProjectAllocationPanel } from '../../components/project-allocation-pane
     CommonModule,
     PageHeader,
     StatusChip,
-    ProjectAllocationPanel,
     ...MATERIAL_MODULES
   ],
   templateUrl: './project-list.html'
@@ -41,11 +39,6 @@ export class ProjectList {
   loading = false;
   errorMessage = '';
 
-  expandedProjectId = signal<number | null>(null);
-  allocations = signal<ProjectAllocation[]>([]);
-  allocationsLoading = signal(false);
-  projects = signal<Project[]>([]);
-
   private readonly refresh$ = new BehaviorSubject<void>(undefined);
 
   projects$ = this.refresh$.pipe(
@@ -56,10 +49,7 @@ export class ProjectList {
       });
 
       return this.projectService.getProjects().pipe(
-        map(response => {
-          this.projects.set(response.data);
-          return response.data;
-        }),
+        map(response => response.data),
         catchError(error => {
           console.error(error);
 
@@ -113,60 +103,28 @@ export class ProjectList {
     });
   }
 
-  toggleExpansion(project: Project): void {
-    if (this.expandedProjectId() === project.projectId) {
-      this.expandedProjectId.set(null);
-      return;
-    }
+  openAllocationDialog(project: Project): void {
 
-    this.expandedProjectId.set(project.projectId);
-    this.loadAllocations(project.projectId);
-  }
-
-  reloadExpandedProject(): void {
-    const projectId = this.expandedProjectId();
-    if (!projectId) {
-      return;
-    }
-
-    this.loadAllocations(projectId);
-  }
-
-  private loadAllocations(projectId: number): void {
-    this.allocationsLoading.set(true);
-
-    this.projectService
-      .getProjectAllocations(projectId)
-      .pipe(
-        finalize(() => {
-          this.allocationsLoading.set(false);
-        })
-      )
-      .subscribe({
-        next: response => {
-          this.allocations.set(response.data);
-
-          this.projects.update(projects =>
-            projects.map(project => {
-              if (project.projectId !== projectId) {
-                return project;
-              }
-
-              return {
-                ...project,
-                totalEmployees: response.data.length
-              };
-            })
-          );
-        },
-        error: error => {
-          console.error(error);
-          this.snackBar.open(
-            'Failed to load allocations',
-            'Close',
-            { duration: 3000 }
-          );
+    const dialogRef = this.dialog.open(
+      ProjectAllocationPanel,
+      {
+        width: '1100px',
+        maxWidth: '95vw',
+        data: {
+          project
         }
-      });
+      }
+    );
+
+    dialogRef.afterClosed().subscribe(updated => {
+
+      if (updated) {
+
+        this.refresh$.next();
+
+      }
+
+    });
+
   }
 }
