@@ -8,6 +8,7 @@ import { MATERIAL_MODULES } from '../../../../shared/material/material';
 import { DepartmentService } from '../../../departments/services/department';
 import { RoleService } from '../../services/role';
 import { EmployeeService } from '../../services/employee';
+import { AuthService } from '../../../auth/services/auth';
 import { Employee } from '../../models/employee.model';
 import { GENDER_OPTIONS } from '../../constants/employee.constants';
 
@@ -25,6 +26,7 @@ export class EmployeeFormDialog {
   private readonly employeeService = inject(EmployeeService);
   private readonly departmentService = inject(DepartmentService);
   private readonly roleService = inject(RoleService);
+  private readonly authService = inject(AuthService);
   private readonly toastr = inject(ToastrService);
   private readonly dialogRef = inject(MatDialogRef<EmployeeFormDialog>);
 
@@ -33,6 +35,8 @@ export class EmployeeFormDialog {
 
   isLoading = false;
   isEditMode = !!this.data;
+  currentUser = this.authService.getCurrentUser();
+  isManager = this.currentUser?.role === 'Manager';
 
   departments$ = this.departmentService
     .getDepartments()
@@ -53,6 +57,12 @@ export class EmployeeFormDialog {
     departmentId: [this.data?.departmentId ?? null, Validators.required],
     roleId: [this.data?.roleId ?? null, Validators.required]
   });
+
+  constructor() {
+    if (this.isManager) {
+      this.configureManagerRestrictions();
+    }
+  }
 
   submit(): void {
     if (this.form.invalid) {
@@ -97,5 +107,23 @@ export class EmployeeFormDialog {
           this.toastr.error(message);
         }
       });
+  }
+
+  private configureManagerRestrictions(): void {
+    const departmentId =
+      this.currentUser?.departmentId;
+
+    if (!departmentId) {
+      return;
+    }
+
+    this.form.patchValue({
+      departmentId,
+      roleId: 3
+    });
+
+    this.form.controls.departmentId.disable();
+
+    this.form.controls.roleId.disable();
   }
 }

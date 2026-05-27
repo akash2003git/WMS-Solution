@@ -19,6 +19,7 @@ import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/conf
 import { DepartmentService } from '../../../departments/services/department';
 import { EmployeeService } from '../../services/employee';
 import { RoleService } from '../../services/role';
+import { AuthService } from '../../../auth/services/auth';
 import { Employee } from '../../models/employee.model';
 import { EmployeeFilter } from '../../models/employee-filter.model';
 import { EmployeeFormDialog } from '../../components/employee-form-dialog/employee-form-dialog';
@@ -42,6 +43,7 @@ export class EmployeeList {
   private readonly employeeService = inject(EmployeeService);
   private readonly departmentService = inject(DepartmentService);
   private readonly roleService = inject(RoleService);
+  private readonly authService = inject(AuthService);
   private readonly dialog = inject(MatDialog);
   private readonly toastr = inject(ToastrService);
   private readonly fb = inject(FormBuilder);
@@ -58,6 +60,8 @@ export class EmployeeList {
   ];
 
   loading = false;
+  currentUser = this.authService.getCurrentUser();
+  isManager = this.currentUser?.role === 'Manager';
 
   private readonly refresh$ = new BehaviorSubject<void>(undefined);
 
@@ -75,6 +79,12 @@ export class EmployeeList {
     sortBy: 'firstname',
     sortDirection: 'asc'
   };
+
+  constructor() {
+    if (this.isManager) {
+      this.initializeManagerDepartmentFilter();
+    }
+  }
 
   departments$ = this.departmentService
     .getDepartments()
@@ -133,6 +143,20 @@ export class EmployeeList {
     this.refresh$.next();
   }
 
+  private initializeManagerDepartmentFilter(): void {
+    const departmentId = this.currentUser?.departmentId;
+    if (!departmentId) {
+      return;
+    }
+    this.filterForm.patchValue({
+      departmentId
+    });
+    this.filterState = {
+      ...this.filterState,
+      departmentId
+    };
+  }
+
   onPageChange(event: PageEvent): void {
     this.filterState = {
       ...this.filterState,
@@ -180,6 +204,17 @@ export class EmployeeList {
           this.refresh$.next();
         }
       });
+  }
+
+  canManageEmployee(employee: Employee): boolean {
+    if (!this.isManager) {
+      return true;
+    }
+
+    return (
+      employee.departmentId ===
+      this.currentUser?.departmentId
+    );
   }
 
   deleteEmployee(employee: Employee): void {

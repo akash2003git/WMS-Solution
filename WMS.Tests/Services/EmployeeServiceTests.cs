@@ -5,6 +5,7 @@ using WMS.Application.DTOs.Employee;
 using WMS.Application.Services;
 using WMS.Domain.Entities;
 using WMS.Domain.Interfaces;
+using WMS.Application.Interfaces;
 
 namespace WMS.Tests.Services;
 
@@ -12,6 +13,8 @@ public class EmployeeServiceTests
 {
     private readonly Mock<IEmployeeRepository>
         _employeeRepositoryMock;
+    private readonly Mock<ICurrentUserService>
+        _currentUserServiceMock;
 
     private readonly EmployeeService _employeeService;
 
@@ -20,9 +23,17 @@ public class EmployeeServiceTests
         _employeeRepositoryMock =
             new Mock<IEmployeeRepository>();
 
+        _currentUserServiceMock =
+            new Mock<ICurrentUserService>();
+
         _employeeService =
             new EmployeeService(
-                _employeeRepositoryMock.Object);
+                _employeeRepositoryMock.Object,
+                _currentUserServiceMock.Object);
+
+        _currentUserServiceMock
+            .Setup(x => x.Role)
+            .Returns("Admin");
     }
 
     [Fact]
@@ -261,4 +272,170 @@ public class EmployeeServiceTests
             x => x.UpdateEmployeeAsync(employee),
             Times.Once);
     }
+
+    [Fact]
+    public async Task UpdateEmployee_ManagerFromDifferentDepartment_ThrowsForbiddenException()
+    {
+        // Arrange
+
+        int employeeId = 1;
+
+        var employee = new Employee
+        {
+            EmployeeId = employeeId,
+            DepartmentId = 1,
+            RoleId = 3,
+            Email = "employee@test.com"
+        };
+
+        var request = new UpdateEmployeeRequestDto
+        {
+            FirstName = "Updated",
+            LastName = "User",
+            Email = "updated@test.com",
+            PhoneNumber = "9999999999",
+            Gender = 'M',
+            DOB = new DateOnly(2000, 1, 1),
+            DOJ = new DateOnly(2024, 1, 1),
+            DepartmentId = 1,
+            RoleId = 3
+        };
+
+        _currentUserServiceMock
+            .Setup(x => x.Role)
+            .Returns("Manager");
+
+        _currentUserServiceMock
+            .Setup(x => x.DepartmentId)
+            .Returns(2);
+
+        _employeeRepositoryMock
+            .Setup(x => x.GetByIdAsync(employeeId))
+            .ReturnsAsync(employee);
+
+        // Act
+
+        Func<Task> action =
+            async () =>
+                await _employeeService
+                    .UpdateEmployeeAsync(employeeId, request);
+
+        // Assert
+
+        await action.Should()
+            .ThrowAsync<ForbiddenException>()
+            .WithMessage(
+                "You cannot modify employees outside your department");
+    }
+
+    [Fact]
+    public async Task UpdateEmployee_ManagerChangesRole_ThrowsForbiddenException()
+    {
+        // Arrange
+
+        int employeeId = 1;
+
+        var employee = new Employee
+        {
+            EmployeeId = employeeId,
+            DepartmentId = 2,
+            RoleId = 3,
+            Email = "employee@test.com"
+        };
+
+        var request = new UpdateEmployeeRequestDto
+        {
+            FirstName = "Updated",
+            LastName = "User",
+            Email = "employee@test.com",
+            PhoneNumber = "9999999999",
+            Gender = 'M',
+            DOB = new DateOnly(2000, 1, 1),
+            DOJ = new DateOnly(2024, 1, 1),
+            DepartmentId = 2,
+            RoleId = 2
+        };
+
+        _currentUserServiceMock
+            .Setup(x => x.Role)
+            .Returns("Manager");
+
+        _currentUserServiceMock
+            .Setup(x => x.DepartmentId)
+            .Returns(2);
+
+        _employeeRepositoryMock
+            .Setup(x => x.GetByIdAsync(employeeId))
+            .ReturnsAsync(employee);
+
+        // Act
+
+        Func<Task> action =
+            async () =>
+                await _employeeService
+                    .UpdateEmployeeAsync(employeeId, request);
+
+        // Assert
+
+        await action.Should()
+            .ThrowAsync<ForbiddenException>()
+            .WithMessage(
+                "Managers cannot change employee role");
+    }
+
+    [Fact]
+    public async Task UpdateEmployee_ManagerChangesDepartment_ThrowsForbiddenException()
+    {
+        // Arrange
+
+        int employeeId = 1;
+
+        var employee = new Employee
+        {
+            EmployeeId = employeeId,
+            DepartmentId = 2,
+            RoleId = 3,
+            Email = "employee@test.com"
+        };
+
+        var request = new UpdateEmployeeRequestDto
+        {
+            FirstName = "Updated",
+            LastName = "User",
+            Email = "employee@test.com",
+            PhoneNumber = "9999999999",
+            Gender = 'M',
+            DOB = new DateOnly(2000, 1, 1),
+            DOJ = new DateOnly(2024, 1, 1),
+            DepartmentId = 1,
+            RoleId = 3
+        };
+
+        _currentUserServiceMock
+            .Setup(x => x.Role)
+            .Returns("Manager");
+
+        _currentUserServiceMock
+            .Setup(x => x.DepartmentId)
+            .Returns(2);
+
+        _employeeRepositoryMock
+            .Setup(x => x.GetByIdAsync(employeeId))
+            .ReturnsAsync(employee);
+
+        // Act
+
+        Func<Task> action =
+            async () =>
+                await _employeeService
+                    .UpdateEmployeeAsync(employeeId, request);
+
+        // Assert
+
+        await action.Should()
+            .ThrowAsync<ForbiddenException>()
+            .WithMessage(
+                "Managers cannot change employee department");
+    }
+
 }

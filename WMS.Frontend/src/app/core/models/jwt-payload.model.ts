@@ -1,6 +1,5 @@
 export interface JwtPayload {
   exp: number;
-  role?: string;
-  employeeId?: string;
-  departmentId?: string;
+  EmployeeId?: string;
+  DepartmentId?: string;
 }

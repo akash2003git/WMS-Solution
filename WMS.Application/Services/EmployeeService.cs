@@ -5,25 +5,35 @@ using WMS.Application.Interfaces;
 using WMS.Domain.Entities;
 using WMS.Domain.Enums;
 using WMS.Domain.Interfaces;
+using WMS.Application.Common.Constants;
 
 namespace WMS.Application.Services;
 
 public class EmployeeService : IEmployeeService
 {
     private readonly IEmployeeRepository _employeeRepository;
+    private readonly ICurrentUserService _currentUserService;
 
-    public EmployeeService(IEmployeeRepository employeeRepository)
+    public EmployeeService(
+        IEmployeeRepository employeeRepository,
+        ICurrentUserService currentUserService)
     {
         _employeeRepository = employeeRepository;
+        _currentUserService = currentUserService;
     }
 
     public async Task<CreateEmployeeResponseDto> CreateEmployeeAsync(
         CreateEmployeeRequestDto request)
     {
+        var normalized =
+            NormalizeManagerCreateRequest(
+                request.DepartmentId,
+                request.RoleId);
+
         await ValidateEmployeeAsync(
             request.Email,
-            request.DepartmentId,
-            request.RoleId);
+            normalized.DepartmentId,
+            normalized.RoleId);
 
         string tempPassword = GenerateTemporaryPassword();
 
@@ -39,15 +49,15 @@ public class EmployeeService : IEmployeeService
             Gender = request.Gender,
             DOB = request.DOB,
             DOJ = request.DOJ,
-            DepartmentId = request.DepartmentId,
-            RoleId = request.RoleId
+            DepartmentId = normalized.DepartmentId,
+            RoleId = normalized.RoleId
         };
 
         var userLogin = new UserLogin
         {
             Username = request.Email,
             PasswordHash = passwordHash,
-            RoleId = request.RoleId,
+            RoleId = normalized.RoleId,
             MustChangePassword = true
         };
 
@@ -152,6 +162,8 @@ public class EmployeeService : IEmployeeService
             throw new NotFoundException("Employee not found");
         }
 
+        EnsureCanModifyEmployee(employee);
+
         var existingEmployee =
             await _employeeRepository
                 .GetEmployeeByEmailAsync(request.Email);
@@ -162,6 +174,10 @@ public class EmployeeService : IEmployeeService
             throw new BusinessRuleException(
                 "Email already exists");
         }
+
+        EnsureManagerCannotChangeRestrictedFields(
+            employee,
+            request);
 
         await ValidateDepartmentAndRole(
             request.DepartmentId,
@@ -192,11 +208,76 @@ public class EmployeeService : IEmployeeService
             throw new NotFoundException("Employee not found");
         }
 
+        EnsureCanModifyEmployee(employee);
+
         employee.Status = EmployeeStatus.Inactive;
 
         employee.UpdatedOn = DateTime.UtcNow;
 
         await _employeeRepository.SaveChangesAsync();
+    }
+
+    private void EnsureCanModifyEmployee(Employee employee)
+    {
+        if (_currentUserService.Role == "Admin")
+        {
+            return;
+        }
+
+        if (_currentUserService.Role == "Manager")
+        {
+            if (_currentUserService.DepartmentId ==
+                employee.DepartmentId)
+            {
+                return;
+            }
+
+            throw new ForbiddenException(
+                "You cannot modify employees outside your department");
+        }
+
+        throw new ForbiddenException(
+            "You do not have permission to modify employees");
+    }
+
+    private (
+        int DepartmentId,
+        int RoleId)
+    NormalizeManagerCreateRequest(
+        int departmentId,
+        int roleId)
+    {
+        if (_currentUserService.Role != "Manager")
+        {
+            return (departmentId, roleId);
+        }
+
+        return (
+            _currentUserService.DepartmentId!.Value,
+            SystemRoles.Employee
+        );
+    }
+
+    private void EnsureManagerCannotChangeRestrictedFields(
+        Employee employee,
+        UpdateEmployeeRequestDto request)
+    {
+        if (_currentUserService.Role != "Manager")
+        {
+            return;
+        }
+
+        if (request.DepartmentId != employee.DepartmentId)
+        {
+            throw new ForbiddenException(
+                "Managers cannot change employee department");
+        }
+
+        if (request.RoleId != employee.RoleId)
+        {
+            throw new ForbiddenException(
+                "Managers cannot change employee role");
+        }
     }
 
     private async Task ValidateEmployeeAsync(

@@ -3,4 +3,6 @@ export interface CurrentUser {
   username: string;
   role: string;
   token: string;
+  employeeId?: number;
+  departmentId?: number;
 }

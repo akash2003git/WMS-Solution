@@ -102,11 +102,20 @@ export class AuthService {
   }
 
   setSession(response: LoginResponse): void {
+    const decoded = jwtDecode<JwtPayload>(response.token);
+
     const user: CurrentUser = {
       userId: response.userId,
       username: response.username,
       role: response.role,
-      token: response.token
+      token: response.token,
+      employeeId: decoded.EmployeeId
+        ? Number(decoded.EmployeeId)
+        : undefined,
+
+      departmentId: decoded.DepartmentId
+        ? Number(decoded.DepartmentId)
+        : undefined
     };
 
     this.storageService.setToken(response.token);

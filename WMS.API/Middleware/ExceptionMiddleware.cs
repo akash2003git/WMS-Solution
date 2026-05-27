@@ -69,6 +69,12 @@ public class ExceptionMiddleware
                 response = ApiResponse<object>.FailureResponse(exception.Message);
                 break;
 
+            case ForbiddenException:
+                statusCode = HttpStatusCode.Forbidden;
+                response = ApiResponse<object>
+                    .FailureResponse(exception.Message);
+                break;
+
             default:
                 statusCode = HttpStatusCode.InternalServerError;
                 response = ApiResponse<object>.FailureResponse(
